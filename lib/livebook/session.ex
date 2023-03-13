@@ -55,6 +55,7 @@ defmodule Livebook.Session do
     :mode,
     :images_dir,
     :created_at,
+    :owner_id,
     :memory_usage,
     :app_info
   ]
@@ -83,6 +84,7 @@ defmodule Livebook.Session do
           mode: Data.session_mode(),
           images_dir: FileSystem.File.t(),
           created_at: DateTime.t(),
+          owner_id: id(),
           memory_usage: memory_usage(),
           app_info: app_info() | nil
         }
@@ -92,6 +94,7 @@ defmodule Livebook.Session do
           data: Data.t(),
           client_pids_with_id: %{pid() => Data.client_id()},
           created_at: DateTime.t(),
+          owner_id: id(),
           runtime_monitor_ref: reference() | nil,
           autosave_timer_ref: reference() | nil,
           autosave_path: String.t(),
@@ -736,6 +739,8 @@ defmodule Livebook.Session do
            ) do
       state = schedule_autosave(state)
 
+      IO.inspect(state, label: "session state")
+
       if file = state.data.file do
         Livebook.NotebookManager.add_recent_notebook(file, state.data.notebook.name)
       end
@@ -754,6 +759,7 @@ defmodule Livebook.Session do
         data: data,
         client_pids_with_id: %{},
         created_at: DateTime.utc_now(),
+        owner_id: opts[:owner_id],
         runtime_monitor_ref: nil,
         autosave_timer_ref: nil,
         autosave_path: opts[:autosave_path],
@@ -1523,6 +1529,7 @@ defmodule Livebook.Session do
       mode: state.data.mode,
       images_dir: images_dir_from_state(state),
       created_at: state.created_at,
+      owner_id: state.owner_id,
       memory_usage: state.memory_usage,
       app_info:
         if state.data.mode == :app do

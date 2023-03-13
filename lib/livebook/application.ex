@@ -40,6 +40,7 @@ defmodule Livebook.Application do
         {Registry, keys: :unique, name: Livebook.HubsRegistry},
         # Start the supervisor dynamically managing connections
         {DynamicSupervisor, name: Livebook.HubsSupervisor, strategy: :one_for_one}
+        # Game.GameServer
       ] ++
         iframe_server_specs() ++
         [

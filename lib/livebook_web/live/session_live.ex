@@ -14,10 +14,11 @@ defmodule LivebookWeb.SessionLive do
 
   @impl true
   def mount(%{"id" => session_id}, _session, socket) do
+    user_id = socket.assigns.current_user.id |> IO.inspect(label: "user_id")
     # We use the tracked sessions to locate the session pid, but then
     # we talk to the session process exclusively for getting all the information
     case Sessions.fetch_session(session_id) do
-      {:ok, %{pid: session_pid}} ->
+      {:ok, %{pid: session_pid, owner_id: ^user_id}} ->
         {data, client_id} =
           if connected?(socket) do
             {data, client_id} =
@@ -75,6 +76,15 @@ defmodule LivebookWeb.SessionLive do
            max_entries: 1,
            max_file_size: 5_000_000
          )}
+
+      {:ok, _} ->
+        {:ok,
+         socket
+         |> put_flash(
+           :error,
+           "You can not open this book."
+         )
+         |> redirect(to: ~p"/")}
 
       :error ->
         {:ok, redirect(socket, to: ~p"/")}

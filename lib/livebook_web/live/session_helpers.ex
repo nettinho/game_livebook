@@ -24,6 +24,8 @@ defmodule LivebookWeb.SessionHelpers do
         opts
       end
 
+    opts = Keyword.put(opts, :owner_id, socket.assigns.current_user.id)
+
     case Livebook.Sessions.create_session(opts) do
       {:ok, session} ->
         redirect_path = session_path(session.id, opts)
