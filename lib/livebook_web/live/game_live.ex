@@ -30,7 +30,7 @@ defmodule LivebookWeb.GameLive do
             class="p-2 m-2 border border-slate-500 rounded-md font-mono"
           >
             <span class="inline-block w-24"><%= score %></span>
-            <span class="inline-block w-16"><%= inspect(status) %></span>
+            <%!-- <span class="inline-block w-16"><%= inspect(status) %></span> --%>
             <span class="inline-block w-16"><%= name %></span>
             <span class="inline-block w-16"><%= powered %></span>
           </div>
