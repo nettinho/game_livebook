@@ -21,6 +21,25 @@ defmodule LivebookWeb.Router do
     plug :within_iframe_secure_headers
   end
 
+  pipeline :game_browser do
+    plug :accepts, ["html"]
+    plug :fetch_session
+    plug :fetch_live_flash
+    plug :put_root_layout, {LivebookWeb.Layouts, :game_root}
+    # Because LIVEBOOK_SECRET_KEY_BASE authentication is randomly
+    # generated, the odds of getting a CSRFProtection is quite high
+    # and exceptions can lead to a poor user experience.
+    #
+    # During authentication, configure_session(renew: true) will
+    # override the configure_session(ignore: true) but the session
+    # will be cleared anyway. This means an attacker can authenticate
+    # someone in a given Livebook instance but they wouldn't be able
+    # to do anything once the authentication goes through.
+    plug :protect_from_forgery, with: :clear_session
+    plug :put_secure_browser_headers
+    plug :within_iframe_secure_headers
+  end
+
   pipeline :auth do
     plug LivebookWeb.AuthPlug
     plug LivebookWeb.UserPlug
@@ -54,11 +73,18 @@ defmodule LivebookWeb.Router do
     get "/sessions/:id/assets/:hash/*file_parts", SessionController, :show_asset
   end
 
+
+  live_session :game, on_mount: [LivebookWeb.AuthHook, LivebookWeb.UserHook] do
+    scope "/", LivebookWeb do
+      pipe_through [:game_browser, :auth]
+
+      live "/game", GameLive
+    end
+  end
+
   live_session :default, on_mount: [LivebookWeb.AuthHook, LivebookWeb.UserHook] do
     scope "/", LivebookWeb do
       pipe_through [:browser, :auth]
-
-      live "/game", GameLive
 
       live "/", HomeLive, :page
       live "/home/sessions/:session_id/close", HomeLive, :close_session
