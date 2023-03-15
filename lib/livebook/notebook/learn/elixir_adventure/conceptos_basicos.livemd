@@ -4,9 +4,9 @@
 
 Este notebook contiene una pequeña introducción sobre el lenguaje de programación Elixir
 
-Exploraremos los conceptos básicos para implementar nuestro juego **Elixir Adventure**, desarrollado por el equipo de Truedat.
+Exploraremos los conceptos básicos para definir una estrategia de movimientos para el juego **Elixir Adventure**, desarrollado por el equipo de Truedat.
 
-Para mas información sobre Elixir, puedes acceder al siguiente enlace: [Elixir's
+Para más información sobre Elixir, puedes acceder a los siguientes enlaces: [Elixir's
 Getting Started guide](https://elixir-lang.org/getting-started/introduction.html)
 y [Elixir Learning](https://elixir-lang.org/learning.html).
 
@@ -14,70 +14,25 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ### Iniciamos
 
-El juego de Elixir Adventure consiste en una serie de instrucciones para mover
-el jugador representado por un cirtulo que tendrá la misión
+El juego de **Elixir Adventure** consiste en una serie de instrucciones para mover
+un jugador representado por un círculo con vuestro nombre, que tendrá la misión de moverse sobre el plano del juego para capturar las "frutas" que darán puntos, también existen frutas especiales con un "power up" con el que podrán atacar a otros jugadores para quitarles puntos.
 
-The Portal game consists of a series of puzzles that must be
-solved by teleporting the player's character and simple objects
-from one place to another.
+¿Qué es lo que aprenderemos?
 
-In order to teleport, the player uses the Portal gun to shoot doors
-onto flat planes, like a floor or a wall. Entering one of those doors
-teleports you to the other:
-
-![](images/portal-drop.jpeg)
-
-Our version of the Portal game will use Elixir to shoot doors of
-different colors and transfer data between them! We will even learn how
-we can distribute doors across different machines in our network:
-
-![](images/portal-list.jpeg)
-
-Here is what we will learn:
-
-* Elixir's basic data structures
+* Elixir Basic Types
 * Pattern matching
-* Using agents for state
-* Using structs for custom data structures
-* Extending the language with protocols
-* Supervision trees and applications
-* Distributed Elixir nodes
+* Inmutability
+* Piping
+* Enum:
+  * .filter
+  * .find
+* Send / Receive
 
-At the end of this notebook, we will make the following code work:
+¿Intrigado? ¡Empecemos!
 
-<!-- livebook:{"force_markdown":true} -->
+## Elixir basic types
 
-```elixir
-# Shoot two doors: one orange, another blue
-Portal.shoot(:orange)
-Portal.shoot(:blue)
-
-# Start transferring the list [1, 2, 3, 4] from orange to blue
-portal = Portal.transfer(:orange, :blue, [1, 2, 3, 4])
-
-# This will output:
-#
-#   #Portal<
-#          :orange <=> :blue
-#     [1, 2, 3, 4] <=> []
-#   >
-
-# Now every time we call push_right, data goes to blue
-Portal.push_right(portal)
-
-# This will output:
-#
-#   #Portal<
-#          :orange <=> :blue
-#        [1, 2, 3] <=> [4]
-#   >
-```
-
-Intrigued? Let's get started!
-
-## Basic data structures
-
-Elixir has numbers, strings, and variables. Code comments start with `#`:
+Los tipos básicos de Elixir son: numbers, strings y variables. Los comentarios de código empiezan con `#`:
 
 ```elixir
 # Numbers
@@ -88,15 +43,11 @@ variable = "hello" <> " world"
 IO.inspect(variable)
 ```
 
-Executing the cell above prints the number `42` and the string
-`"hello world"`. To do so, we called the function `inspect` in
-the `IO` module, using the `IO.inspect(...)` notation. This function
-prints the given data structure to your terminal - in this case,
-our notebook - and returns the value given to it.
+Ejecutando la celda de arriba, se imprime el numero `42` y el string `"hello world"`. Para ello
+usaremos la función `inspect` del módulo `IO`, lo utilizaremos de la siguiente manera: `IO.inspect(...)`.  Esta función imprime la estructura de datos en la terminal. En este caso del notebook y retorna el valor dado.
 
-Elixir also has three special values, `true`, `false`, and `nil`.
-Everything in Elixir is considered to be a truthy value, except for
-`false` and `nil`:
+En elixir también existen tres valores especiales `true`, `false` y `nil`.
+Todo en Elixir es considerado un valor verdadero, excepto por `false` y `nil`:
 
 ```elixir
 # && is the logical and operator
@@ -108,7 +59,11 @@ IO.inspect(true || false)
 IO.inspect(nil || 42)
 ```
 
-For working with collections of data, Elixir has three data types:
+Para trabajar con colecciones de datos, Elixir tiene tres tipos:
+
+* Lists (Listas)
+* Tuples (Tuplas)
+* Maps (Mapas)
 
 ```elixir
 # Lists (typically hold a dynamic amount of items)
@@ -121,40 +76,31 @@ IO.inspect({:ok, "value"})
 IO.inspect(%{"key" => "value"})
 ```
 
-In the snippet above, we also used a new data structure represented
-as `:ok`. All values starting with a leading `:` in Elixir are called
-**atoms**. Atoms are used as identifiers across the language. Common
-atoms are `:ok` and `:error`. Which brings us to the next topic: pattern
-matching.
+Si inspeccionamos el código de arriba, podemos observar el dato `:ok`. 
+En Elixir todos los valores que empiezan con `:` son llamados **atoms** (átomos). Los atoms son utilizados como identificadores a través del lenguaje. Comúnmente son  `:ok` y `:error`. Los veremos en la próxima sección: Pattern matching.
 
 ## Pattern matching
 
-The `=` operator in Elixir is a bit different from the ones we see
-in other languages:
+En Elixir el operador `=` funciona de una manera un poco diferente a como funciona en otros lenguajes de programación.
 
 ```elixir
 x = 1
 x
 ```
 
-So far so good, but what happens if we invert the operands?
+Por aquí todo bien, pero ¿qué pasa si invertimos los operadores?
 
 ```elixir
 1 = x
 ```
 
-It worked! That's because Elixir tries to match the right side
-against the left side. Since both are set to `1`, it works. Let's
-try something else:
+¡Funciona! Esto es por que Elixir trata de hacer match del lado derecho contra el lado izquierdo, y dado que los dos son `1` funciona. Intentemos otra cosa:
 
 ```elixir
 2 = x
 ```
 
-Now the sides did not match, so we got an error. We use pattern
-matching in Elixir to match on collection too. For example, we
-can use `[head | tail]` to extract the head (the first element)
-and tail (the remaining ones) from a list:
+Ahora los lados no son iguales y retorna un match error. En Elixir también se utiliza el pattern maching para las colecciones. Por ejemplo podemos utilizar un `[head | tail]` para extraer el head (el primer elemento) y el tail (el resto) de una lista.
 
 ```elixir
 [head | tail] = [1, 2, 3]
@@ -162,25 +108,20 @@ IO.inspect(head)
 IO.inspect(tail)
 ```
 
-Matching an empty list against `[head | tail]` causes a match error:
+Si intentamos hacer un matching con una lista vacía contra un `[head | tail]` nos retorna un error de tipo match.
 
 ```elixir
 [head | tail] = []
 ```
 
-Finally, we can also use the `[head | tail]` expression to add
-elements to the head of a list:
+Finalmente, podemos utilizar la expresión `[head | tail]` para añadir elementos al principio de la lista.
 
 ```elixir
 list = [1, 2, 3]
 [0 | list]
 ```
 
-We can also pattern match on tuples. This is often used to match
-on the return types of function calls. For example, take the function
-`Date.from_iso8601(string)`, which returns `{:ok, date}` if the
-string represents a valid date, in the format `YYYY-MM-DD`, otherwise
-it returns `{:error, reason}`:
+También podemos realizar el pattern macthing con tuplas. Esto se suele utilizar para hacer match con el tipo de resultado en la llamada de una función.  Por ejemplo, la función  `Date.from_iso8601(string)` retorna `{:ok, date}` si el string representa una fecha válida en un formato  `YYYY-MM-DD`, por el contrario retorna un `{:error, reason}`:
 
 ```elixir
 # A valid date
@@ -192,9 +133,9 @@ Date.from_iso8601("2020-02-29")
 Date.from_iso8601("2020-02-30")
 ```
 
-Now, what happens if we want our code to behave differently depending
-if the date is valid or not? We can use `case` to pattern match on
-the different tuples:
+Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento 
+diferente si la fecha es válida o no? Podemos utilizar un `case` 
+con un pattern maching con las diferentes tuplas:
 
 ```elixir
 # Give an invalid date as input
@@ -210,14 +151,14 @@ case Date.from_iso8601(input) do
 end
 ```
 
-In this example, we are using `case` to pattern match on the different
-outcomes of the `Date.from_iso8601`. We say the `case` above has two
-clauses, one matching on `{:ok, date}` and another on `{:error, reason}`.
-Now try changing the `input` variable above and reevaluate the cell
-accordingly. What happens when you give it a valid date?
+En este ejemplo, estamos utilizando `case` para realizar un pattern matching con el retorno
+de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con 
+`{:ok, date}` y otra con `{:error, reason}`.
 
-Finally, we can also pattern match on maps. This is used to extract the
-values for the given keys:
+Ahora intenta cambiar la variable del `input` del código de arriba y reevalua la celda.
+¿Qué pasa cuando tienes una fecha válida?
+
+También podemos utilizar el pattern maching con mapas. Esto se utiliza para extraer los valores de las claves.
 
 ```elixir
 map = %{:elixir => :functional, :python => :object_oriented}
@@ -225,577 +166,174 @@ map = %{:elixir => :functional, :python => :object_oriented}
 type
 ```
 
-If the key does not exist on the map, it raises:
+Si la clave no existe en el mapa, esto provoca una excepción.
 
 ```elixir
 %{:c => type} = map
 ```
 
-With pattern matching out of the way, we are ready to start our Portal
-implementation!
+Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional, 
+podemos realizar un pattern matching utilizando las funciones, combinando lo aprendido anteriormente.
 
-## Modeling portal doors with Agents
-
-Elixir data structures are immutable. In the examples above, we never
-mutated the list. We can break a list apart or add new elements to the
-head, but the original list is never modified.
-
-That said, when we need to keep some sort of state, like the data
-transferring through a portal, we must use an abstraction that stores
-this state for us. One such abstraction in Elixir is called an agent.
-Before we use agents, we need to briefly talk about anonymous functions.
-
-Anonymous functions are a mechanism to represent pieces of code that we
-can pass around and execute later on:
+Utilizando el ejemplo de las fechas visto anteriormente, podemos acceder a diferentes funciones dependiendo de lo que recibamos en los parámetros, en nuestro caso un `{:ok, date}` y un `{:error, reason}`.
 
 ```elixir
-adder = fn a, b -> a + b end
-```
-
-An anonymous function is delimited by the words `fn` and `end` and an
-arrow `->` is used to separate the arguments from the anonymous function
-body. We can now call the anonymous function above multiple times by
-providing two numbers as inputs:
-
-```elixir
-adder.(1, 2)
-```
-
-```elixir
-adder.(3, 5)
-```
-
-In Elixir, we also use anonymous functions to initialize, get, and update
-the agent state:
-
-```elixir
-{:ok, agent} = Agent.start_link(fn -> [] end)
-```
-
-In the example above, we created a new agent, passing a function that
-returns the initial state of an empty list. The agent returns
-`{:ok, #PID<...>}`, where PID stands for a process identifier, which
-uniquely identifies the agent. Elixir has many abstractions for concurrency,
-such as agents, tasks, generic servers, but at the end of the day they all
-boil down to processes. When we say processes in Elixir, we don't mean
-Operating System processes, but rather Elixir Processes, which are lightweight
-and isolated, allowing us to run hundreds of thousands of them on the same
-machine.
-
-We store the agent's PID in the `agent` variable, which allows us to
-send messages to get the agent's state:
-
-```elixir
-Agent.get(agent, fn list -> list end)
-```
-
-As well as update it before reading again:
-
-```elixir
-Agent.update(agent, fn list -> [0 | list] end)
-Agent.get(agent, fn list -> list end)
-```
-
-We will use agents to implement our portal doors.
-
-Whenever we need to encapsulate logic in Elixir, we create modules,
-which are essentially a collection of functions. We define modules
-with `defmodule` and functions with `def`. Our functions will
-encapsulate the logic to interact with the agent, using the API we
-learned in the cells above:
-
-```elixir
-defmodule Portal.Door do
-  use Agent
-
-  def start_link(color) when is_atom(color) do
-    Agent.start_link(fn -> [] end, name: color)
+defmodule MyModule do
+  def check_my_date({:ok, date}) do
+    "We got a valid date: #{inspect(date)}"
+    :valid_date
   end
 
-  def get(door) do
-    Agent.get(door, fn list -> list end)
-  end
-
-  def push(door, value) do
-    Agent.update(door, fn list -> [value | list] end)
-  end
-
-  def pop(door) do
-    Agent.get_and_update(door, fn list ->
-      case list do
-        [h | t] -> {{:ok, h}, t}
-        [] -> {:error, []}
-      end
-    end)
-  end
-
-  def stop(door) do
-    Agent.stop(door)
+  def check_my_date({:error, reason}) do
+    "Oh no, the date is invalid. Reason: #{inspect(reason)}"
+    :invalid_date
   end
 end
 ```
 
-We declare a module by giving it a name, in this case, `Portal.Door`.
-At the top of the module, we say `use Agent`, which brings some
-`Agent`-related functionality into the module.
-
-The first function is `start_link`, which we often refer to as
-`start_link/1`, where the number 1 is called the "arity" of the
-function and it indicates the number of arguments it receives.
-Then we check that the argument is an atom and proceed to call
-`Agent.start_link/2`, as we did earlier in this section, except we are
-now passing `name: color` as an argument. By giving a name to the
-Agent, we can refer to it anywhere by its name, instead of using its
-PID.
-
-The next two functions, `get/1` and `push/2` perform simple operation
-to the agent, reading its state and adding a new element respectively.
-Let's take a look at them:
-
 ```elixir
-Portal.Door.start_link(:pink)
-Portal.Door.get(:pink)
+input = "2020-02-30"
+
+MyModule.check_my_date(Date.from_iso8601(input))
 ```
 
-Note how we didn't need to store the PID anywhere and we can use the
-atom `:pink` to refer to the door and read its state. If the door
-already exists, and we try to start another one with the same name,
-it returns an `{:error, reason}` tuple instead of `{:ok, pid}`:
+Si cambiamos el `input` a una fecha correcta del código de arriba podemos observar un comportamiento parecido al del `case`
+
+## Inmutabilidad
+
+Inmutabilidad implica que el estado de los datos no puede ser alterado después de ser creado.
+
+Por ejemplo:
 
 ```elixir
-Portal.Door.start_link(:pink)
+my_map = %{a: "valor_a"}
+IO.inspect(Map.put(my_map, :b, "valor_b"), label: "Nuevo mapa")
+IO.inspect(my_map, label: "Mapa original sigue siendo lo mismo")
 ```
 
-Next, let's push some events:
+Esto no significa que una variable no se pueda reasignar:
 
 ```elixir
-Portal.Door.push(:pink, 1)
-Portal.Door.push(:pink, 2)
-Portal.Door.get(:pink)
+my_map = %{a: "valor_a"}
+IO.inspect(my_map, label: "my_map")
+my_map = Map.put(my_map, :b, "valor_b")
+IO.inspect(my_map, label: "my_map reasignado a nuevo mapa")
 ```
 
-We pushed some events and they show up in our state. Although, note
-they appear in reverse order. That's because we are always adding
-new entries to the top of the list.
+## Piping
 
-The fourth function we defined is called `pop/1`. If there is any
-item in the agent, it takes the head of the list and returns it
-wrapped in a `{:ok, value}` tuple. However, if the list is empty,
-it returns `:error`.
+El operador pipe permite componer funciones en Elixir. Toma el resultado de la expresión anterior y lo pasa como **primer** argumento de la siguiente función.
 
 ```elixir
-IO.inspect(Portal.Door.pop(:pink))
-IO.inspect(Portal.Door.pop(:pink))
-IO.inspect(Portal.Door.pop(:pink))
-
-Portal.Door.get(:pink)
+"Elixir mola" |> String.split()
 ```
-
-Finally, the last function, `stop/1`, simply terminates the agent,
-effectively closing the door. Let's try it:
 
 ```elixir
-Portal.Door.stop(:pink)
+"Elixir mola"
+|> String.upcase()
+|> String.split()
 ```
 
-Now, if we try to do anything with it, it will raise:
+Esto evita tener que hacer una anidación de funciones:
 
 ```elixir
-Portal.Door.get(:pink)
+String.split(String.upcase("Elixir mola"))
 ```
 
-Note the error message points out why the operation did not work, great!
+## Enum
 
-## Portal transfers
-
-Our portal doors are ready so it is time to start working on portal
-transfers! In order to store the portal data, we are going to create a
-struct named `Portal`. Let's first learn what structs are about.
-
-Structs define data structures with pre-defined keys. The keys are verified
-at compilation time, so if you make a typo in the key name, you get an error
-early on. Structs are defined inside modules, by calling the `defstruct` with
-a list of atom keys. Let's define a `User` struct with the fields `:name`
-and `:age`:
-
-```elixir
-defmodule User do
-  defstruct [:name, :age]
-end
-```
-
-Now, we can create structs using the `%User{...}` notation:
-
-```elixir
-user = %User{name: "john doe", age: 27}
-```
-
-We can access struct fields using the `struct.field` syntax:
-
-```elixir
-user.name
-```
-
-We can pattern match on structs too:
-
-```elixir
-%User{age: age} = user
-age
-```
-
-Finally, let's see what happens if we do a typo in a field:
-
-```elixir
-%User{agee: age} = user
-```
-
-Now we are ready to define our `Portal` struct. It will have
-two fields, `:left` and `:right`, which point respectively to
-the portal door on the left and the door on the right. Our goal
-is to transfer data from the left door to the right one. The
-`Portal` module, where we define our struct, will also have
-four other functions:
-
-* `shoot(color)` - shoots a door of the given color. This is
-  a wrapper around `Portal.Door.start_link/1`
-
-* `transfer(left_door, right_door, data)` - starts a transfer
-  by loading the given `data` to `left_door` and returns a
-  `Portal` struct
-
-* `push_right(portal)` - receives a portal and continues the
-  transfer by pushing data from the left to the right
-
-* `close(portal)` - closes the portal by explicitly stopping
-  both doors
-
-Let's implement them:
-
-```elixir
-defmodule Portal do
-  defstruct [:left, :right]
-
-  def shoot(color) do
-    Portal.Door.start_link(color)
-  end
-
-  def transfer(left_door, right_door, data) do
-    # First add all data to the portal on the left
-    for item <- data do
-      Portal.Door.push(left_door, item)
-    end
-
-    # Returns a portal struct with the doors
-    %Portal{left: left_door, right: right_door}
-  end
-
-  def push_right(portal) do
-    # See if we can pop data from left. If so, push the
-    # popped data to the right. Otherwise, do nothing.
-    case Portal.Door.pop(portal.left) do
-      :error -> :ok
-      {:ok, h} -> Portal.Door.push(portal.right, h)
-    end
-
-    # Let's return the portal itself
-    portal
-  end
-
-  def close(portal) do
-    Portal.Door.stop(portal.left)
-    Portal.Door.stop(portal.right)
-    :ok
-  end
-end
-```
-
-The `Portal` modules defines a struct followed by a `shoot/1` function.
-The function is just a wrapper around `Portal.Door.start_link/1`. Then
-we define the `transfer/3` function, which loads the given data into the
-left door and returns a Portal struct. Finally, `push_right/3` gets data
-from the door on the left and puts it on the right door. Let's give it a try:
-
-```elixir
-Portal.shoot(:orange)
-Portal.shoot(:blue)
-portal = Portal.transfer(:orange, :blue, [1, 2, 3])
-```
-
-The above returns the `%Portal{}` struct. We can check the data has been
-loaded into the left door:
-
-```elixir
-Portal.Door.get(:orange)
-```
-
-Note the list is reversed - and we knew that! - as we always add items
-on the top. But we will use that to our advantage soon. Let's start pushing
-data to the right:
-
-```elixir
-Portal.push_right(portal)
-Portal.Door.get(:blue)
-```
-
-Since the list is reversed, we can see that we pushed the number `3`
-to the right, which is exactly what we expected. If you reevaluate the
-cell above, you will see data moving to the right, as our portal doors
-are stateful.
-
-Our portal transfer seems to work as expected! Now let's clean up and
-close the transfer:
-
-```elixir
-Portal.close(portal)
-```
-
-We have made some good progress in our implementation, so now let's work
-a bit on the presentation. Currently, the Portal is printed as a struct:
-`%Portal{left: :orange, right: :blue}`. It would be nice if we actually
-had a printed representation of the portal transfer, allowing us to see
-the portal processes as we push data.
-
-## Inspecting portals with Protocols
-
-We already know that Elixir data structures data can be printed by Livebook.
-After all, when we type `1 + 2`, we get `3` back. However, can we customize
-how our own data structures are printed?
-
-Yes, we can! Elixir provides protocols, which allows behaviour to be extended
-and implemented for any data type, like our `Portal` struct, at any time.
-
-For example, every time something is printed in Livebook, or in Elixir's
-terminal, Elixir uses the `Inspect` protocol. Since protocols can be extended
-at any time, by any data type, it means we can implement it for `Portal` too.
-We do so by calling `defimpl/2`, passing the protocol name and the data
-structure we want to implement the protocol for. Let's do it:
-
-```elixir
-defimpl Inspect, for: Portal do
-  def inspect(%Portal{left: left, right: right}, _) do
-    left_door = inspect(left)
-    right_door = inspect(right)
-
-    left_data = inspect(Enum.reverse(Portal.Door.get(left)))
-    right_data = inspect(Portal.Door.get(right))
-
-    max = max(String.length(left_door), String.length(left_data))
-
-    """
-    #Portal<
-      #{String.pad_leading(left_door, max)} <=> #{right_door}
-      #{String.pad_leading(left_data, max)} <=> #{right_data}
-    >\
-    """
-  end
-end
-```
-
-In the snippet above, we have implemented the `Inspect` protocol for the
-`Portal` struct. The protocol expects one function named `inspect` to be
-implemented. The function expects two arguments, the first is the `Portal`
-struct itself and the second is a set of options, which we don't care about
-for now.
-
-Then we call `inspect` multiple times, to get a text representation of both
-`left` and `right` doors, as well as to get a representation of the data
-inside the doors. Finally, we return a string containing the portal presentation
-properly aligned.
-
-That's all we need! Let's start a new transfer and see how it goes:
-
-```elixir
-Portal.shoot(:red)
-Portal.shoot(:purple)
-portal = Portal.transfer(:red, :purple, [1, 2, 3])
-```
-
-Sweet! Look how Livebook automatically picked up the new representation.
-Now feel free to call `push_right` and see what happens:
-
-```elixir
-Portal.push_right(portal)
-```
-
-Feel free to reevaluate the cell above a couple times. Once you are done,
-run the cell below to clean it all up and close the portal:
-
-```elixir
-Portal.close(portal)
-```
-
-There is just one topic left...
-
-## Distributed transfers
-
-With our portals working, we are ready to give distributed transfers a try.
-However, before we start, there is one big disclaimer:
-
-> The feature we are going to implement will allow us to share data across
-> two separate notebooks using the Erlang Distribution. This section is a great
-> experiment to understand how things work behind the scenes but **sharing data
-> across notebooks as done here is a bad idea in practice**. If this topic
-> interests you, we recommend picking up one of the many available learning
-> resources available for Elixir, which will provide a more solid ground to
-> leverage the Erlang VM and its distributed features.
+Un enumerable es cualquier dato sobre el que se pueda iterar. Por ejemplo, listas y mapas. El módulo Enum permite transformar y operar sobre enumerables. Muchas de las funciones de Enum son funciones "higher-order", a las que le pasamos datos y una función que opera sobre esos datos.
 
 <!-- livebook:{"break_markdown":true} -->
 
-### Distribution 101
-
-When Livebook executes the code in a notebook, it starts a separate Elixir
-runtime to do so. Since Livebook itself is also written in Elixir, it uses
-the Erlang Distribution to communicate with this Elixir runtime. We can
-get the name of the Elixir node our notebook is running on like this:
+`Enum.filter` filtra elementos de un enumerable según la función que se le pase. Si la función devuelve true para un elemento, se conserva; si no, se filtra. Por ejemplo, para quedarnos con los elementos pares de una lista:
 
 ```elixir
-node()
+Enum.filter([1, 2, 3], fn x -> rem(x, 2) == 0 end)
 ```
 
-By executing the code above, we can see node names are atoms. By default,
-Livebook only connects to nodes running on the same machine, but you can
-also configure it to connect to runtimes across machines.
-
-We can also get a list of all nodes our runtime is connected to by calling
-`Node.list()`, let's give it a try:
+Otro ejemplo: filtrar elementos "interesantes" en un mapa de puntos. La clave es una tupla de coordenadas {x,y}, y el valor una cadena que describe una "característica" del punto.
 
 ```elixir
-Node.list()
+puntos = %{
+  {1, 2} => "interesante",
+  {3, 4} => "interesante",
+  {5, 6} => "no_interesante"
+}
+
+puntos_interesantes =
+  Enum.filter(
+    puntos,
+    fn {_coordenada, caracteristica} -> caracteristica == "interesante" end
+  )
+
+IO.inspect(puntos_interesantes, label: "Puntos interesantes")
 ```
 
-If you execute the code above, you get... an empty list!?
-
-The reason why we get an empty list is because, by default, Erlang Distribution
-is a fully mesh. This means all nodes can see all nodes in the network. However,
-because we want the notebook runtimes to be isolated from each other, we start
-each runtime as a _hidden_ node. We can ask Elixir to give us all hidden nodes
-instead:
-
-```elixir
-Node.list(:hidden)
-```
-
-Much better! We see one node, which is the Livebook server itself.
-
-Now there is one last piece of the puzzle: in order for nodes to connect to each
-other, they need to have the same cookie. The cookie serves as a very simple
-authentication mechanism. We can read the cookie of our current notebook runtime
-like this:
-
-```elixir
-Node.get_cookie()
-```
-
-Now we have everything we need to connect across notebooks.
+Al iterar sobre un mapa, la función recibe un tupla `{clave, valor}`, en este caso `{coordenada, caracteristica}`.
 
 <!-- livebook:{"break_markdown":true} -->
 
-### Notebook connections
-
-In order to connect across notebooks, open up [a new empty notebook](/learn/notebooks/new)
-in a separate tab, copy and paste the code below to this new notebook,
-and execute it:
-
-<!-- livebook:{"force_markdown":true} -->
+`Enum.find` busca en un enumerable el primer elemento que cumpla lo especificado en la función. Si la función devuelve true en un elemento, `find` lo retorna. Si la función devuelve false para todos los elementos, find devuelve un `nil`.
 
 ```elixir
-IO.inspect node()
-IO.inspect Node.get_cookie()
-:ok
+puntos = %{
+  {1, 2} => "primer_punto",
+  {3, 4} => "segundo_punto",
+  {5, 6} => "tercer_punto"
+}
+
+{coordenada, _nombre_punto} =
+  Enum.find(
+    puntos,
+    fn {_coordenada, nombre_punto} -> nombre_punto == "segundo_punto" end
+  )
+
+IO.inspect(coordenada, label: "La coordenada buscada es")
 ```
 
-Now paste the result of the other node name and its cookie in the variables below:
+## Processes Send / Receive
+
+En Elixir, todo el código se ejecuta dentro de procesos. Los procesos están aislados entre sí, y corren concurrentemente comunicandose mediante el paso de mensajes. Los procesos no solo son la base de la concurrencia en Elixir, además proporcionan los medios para construir programas distribuidos y tolerantes a fallos.
+
+Al ser procesos muy ligeros, es posible no sólo tener cientos, si no miles de procesos ejecutandose concurrentemente.
+
+Para poder enviar mensajes a procesos, utilizamos la función `send/2` y recibimos con la función `receive/1`
 
 ```elixir
-other_node = :"name-of-the@other-node"
-other_cookie = :"value-of-the-other-cookie"
+send(self(), {:hello, "world"})
+
+receive do
+  {:hello, message} -> message
+  {:world, _message} -> "won't match"
+end
 ```
 
-With both variables defined, let's connect to the other node with the given cookie:
+Si evaluamos el código anterior podemos ver que nos enviamos un mensaje a nosotros mismos utilizando la función `send(PID, message)`, el PID es el identidicador único del proceso al que queremos enviar el mensaje, en nuestro caso es nuestro propio PID y lo obtenemos por la función `self()`, en el segundo parámetro se encuentra el mensaje a enviar.
 
-```elixir
-Node.set_cookie(other_node, other_cookie)
-Node.connect(other_node)
-```
+Cuando se envía un mensaje a un proceso, este mensaje se almacena en el buzón del proceso. El bloque del `receive` pasa por el buzón del proceso actual y busca el mensaje que coincida con cualquiera de los patterns especificados.
 
-If it returns true, it means it connected as expected and we are ready to start a
-distributed transfer. The first step is to go to the other notebook and shoot a door.
-You can try calling the following there:
+Como podemos observar, aquí también utilizamos el pattern matching en tuplas para discernir que tipo de mensaje estamos recibiendo y que acción queremos tomar.
 
-<!-- livebook:{"force_markdown":true} -->
+## Y con esto finalizamos esta guía básica de Elixir...
 
-```elixir
-Portal.shoot(:blue)
-```
+Y esperamos que no sea el fin, te einvitamos a seguir conociendo este maravilloso
+lenguaje de programación.
 
-However, if you try the above, it will fail! This happens because the
-Portal code has been defined in this notebook but it is not available
-in the other notebook. If we were working on an actual Elixir project,
-this issue wouldn't exist, because we would start multiple nodes on top
-of the same codebase with the same modules, but we can't do so here.
-To work around this, copy the cell that defines the `Portal.Door` module
-from this notebook into the other notebook and execute it. Now in the other
-node you should be able to start a door:
+Si te interesa, te invitamos a las charlas que se dan en Meetup Madrid-Elxir
 
-<!-- livebook:{"force_markdown":true} -->
+* [Meetup Madrid-Elixir ](https://www.meetup.com/es-ES/madrid-elixir/)
 
-```elixir
-Portal.Door.start_link(:blue)
-```
+Si quieres aprender más, te dejamos estos enlaces
 
-<!-- livebook:{"break_markdown":true} -->
+* [Elixir website](http://elixir-lang.org)
+* [Started guide](https://elixir-lang.org/getting-started/introduction.html).
+* [Many of the available learning resources](https://elixir-lang.org/learning.html).
 
-### Cross-node references
+Si quieres conocer sobre el proyecto de este LiveBook te dejamos el siguiente enlace:
 
-Now that we have spawned a door on the other notebook, we can directly read
-its content from this notebook. So far, we have been using atoms to represent
-doors, such as `:blue`, but we can also use the `{name, node}` notation to refer
-to a process in another node. Let's give it a try:
+* [Elixir and Livebook notebook](/learn/notebooks/elixir-and-livebook).
 
-```elixir
-blue = {:blue, other_node}
-Portal.Door.get(blue)
-```
+Finalmente queremos agradecer a la Universidad Politécnica de Madrid por permitirnos participar en TryIt.
 
-It works! We could successfully read something from the other node. Now,
-let's shoot a yellow portal on this node and start a transfer between them:
-
-```elixir
-Portal.shoot(:yellow)
-yellow = {:yellow, node()}
-portal = Portal.transfer(yellow, blue, [1, 2, 3, 4])
-```
-
-Our distributed transfer was started. Now let's push right:
-
-```elixir
-Portal.push_right(portal)
-```
-
-If you go back to the other notebook and run `Portal.Door.get(:blue)`,
-you should see it has been updated with entries from this notebook!
-The best part of all is that we enabled distributed transfers without
-changing a single line of code!
-
-Our distributed portal transfer works because the doors are just processes
-and accessing/pushing the data through doors is done by sending messages
-to those processes via the Agent API. We say sending a message in Elixir
-is location transparent: we can send messages to any PID regardless if it
-is in the same node as the sender or in different nodes of the same network.
-
-## Wrapping up
-
-So we have reached the end of this notebook with a fast paced introduction
-to Elixir! It was a fun ride and we went from manually starting doors to
-distributed portal transfers.
-
-To learn more about Elixir, we welcome you to explore our [website](http://elixir-lang.org),
-[read our Getting Started guide](https://elixir-lang.org/getting-started/introduction.html),
-and [many of the available learning resources](https://elixir-lang.org/learning.html).
-
-You can also learn how to use some of Elixir and Livebook's unique features together
-in the [Elixir and Livebook](/learn/notebooks/elixir-and-livebook) notebook.
-
-Finally, huge thanks to Augie De Blieck Jr. for the drawings in this tutorial.
-
-See you around!
+¡Esperamos veros pronto!

@@ -63,6 +63,7 @@ defmodule LivebookWeb.Router do
     pipe_through :browser
 
     get "/health", HealthController, :index
+    get "/node", HealthController, :node
   end
 
   # The following routes are public, but should be treated as opaque
