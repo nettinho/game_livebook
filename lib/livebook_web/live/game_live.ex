@@ -23,8 +23,8 @@ defmodule LivebookWeb.GameLive do
                %{
                  name: name,
                  score: score,
-                 powered: powered,
-                 status: status
+                 powered: powered
+                 # status: status
                }} <- Enum.sort_by(@board.players, fn {_, %{score: score}} -> score end, :desc)
             }
             class="p-2 m-2 border border-slate-500 rounded-md font-mono"
@@ -35,7 +35,7 @@ defmodule LivebookWeb.GameLive do
             <span class="inline-block w-16"><%= powered %></span>
           </div>
         </div>
-        <div style={arena_style()}>
+        <div style={arena_style(@board.settings.width, @board.settings.height)}>
           <div :for={{pid, player} <- @board.players} id={inspect(pid)} style={player_style(player)}>
             <span style={"position: relative; bottom: -#{player.size}px"}><%= player.name %></span>
           </div>
@@ -60,10 +60,10 @@ defmodule LivebookWeb.GameLive do
     """
   end
 
-  defp arena_style do
+  defp arena_style(width, height) do
     """
-      width: #{GameEngine.Board.width()}px;
-      height: #{GameEngine.Board.height()}px;
+      width: #{width}px;
+      height: #{height}px;
       border: 1px solid #333;
       background: black;
       position: relative;
@@ -91,23 +91,25 @@ defmodule LivebookWeb.GameLive do
     """
   end
 
+  defp player_style(%{size: size, status: :digesting, status_timer: status_timer} = player)
+       when rem(status_timer, 2) == 0,
+       do:
+         base_player_style(player) <>
+           """
+             box-shadow:
+             0 0 #{size / 2}px #{size / 3}px #fff,
+             0 0 #{size / 1.5}px #{size / 2}px #ff0,
+             0 0 #{size}px #{size}px #f0f;
+           """
 
-  defp player_style(%{size: size, status: :digesting, status_timer: status_timer} = player) when rem(status_timer, 2) == 0, do:
+  defp player_style(%{status: :digesting} = player), do: base_player_style(player)
+
+  defp player_style(%{status: :fleeing} = player),
+    do:
       base_player_style(player) <>
         """
-          box-shadow:
-          0 0 #{size / 2}px #{size / 3}px #fff,
-          0 0 #{size / 1.5}px #{size / 2}px #ff0,
-          0 0 #{size}px #{size}px #f0f;
+        border: 2px solid grey;
         """
-
-  defp player_style(%{status: :digesting} = player), do:
-      base_player_style(player)
-
-  defp player_style(%{status: :fleeing} = player), do:
-      base_player_style(player) <> """
-      border: 2px solid grey;
-      """
 
   defp player_style(%{size: size, powered: powered} = player) when powered > 0,
     do:
