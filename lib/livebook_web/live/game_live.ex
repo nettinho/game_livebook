@@ -5,7 +5,7 @@ defmodule LivebookWeb.GameLive do
   def mount(_params, _session, socket) do
     if connected?(socket), do: Phoenix.PubSub.subscribe(Livebook.PubSub, "board_tick")
 
-    socket = assign(socket, board: GameServer.view(Node.self()))
+    socket = assign(socket, board: Game.view(Node.self()))
     {:ok, socket}
   end
 

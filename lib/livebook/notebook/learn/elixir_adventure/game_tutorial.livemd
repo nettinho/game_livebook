@@ -5,7 +5,7 @@ Mix.install([
   :phoenix,
   :kino,
   :elixir_math,
-  {:game_server, path: "../game_server"}
+  {:game_server, git: "https://github.com/nettinho/game_server.git"}
 ])
 
 Kino.SmartCell.register(SmartCells.Game1)
@@ -25,7 +25,7 @@ Kino.SmartCell.register(SmartCells.Game5)
 
 ```elixir
 {:ok, server} =
-  LocalGameServer.start_link(%{
+  GameServer.start_link(%{
     initial_fruit: {600, 125, 20},
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} -> Enum.empty?(fruits) end
@@ -40,9 +40,9 @@ SmartCells.KinoGame.new(server)
 * Muévelo a la coordenada `{600, 125}` para comer la fruta.
 
 ```elixir
-LocalGameServer.register(server, "nombre_jugador")
+Game.register(server, "nombre_jugador")
 # Mueve el jugador a la coordenada {600, 125} usando la siguiente función:
-#   LocalGameServer.move(server, {coordenada_x, coordenada_y})
+#   Game.move(server, {coordenada_x, coordenada_y})
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
@@ -53,7 +53,7 @@ LocalGameServer.register(server, "nombre_jugador")
 
 ```elixir
 {:ok, server} =
-  LocalGameServer.start_link(%{
+  GameServer.start_link(%{
     initial_fruits_count: 5,
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} -> Enum.empty?(fruits) end
@@ -69,16 +69,16 @@ SmartCells.KinoGame.new(server)
 * Come todas las frutas, en cualquier orden.
 
 ```elixir
-LocalGameServer.register(server, "nombre_jugador")
+Game.register(server, "nombre_jugador")
 # La posición de las frutas se puede obtener con:
-#   LocalGameServer.view(server)
+#   Game.view(server)
 # Encontrarás:
 #  fruits: %{
 #    {coordenada_x_fruta_1, coordenada_y_fruta_1} => {tamaño, :default},
 #    {coordenada_x_fruta_2, coordenada_y_fruta_2} => {tamaño, :default},
 #    <... resto de frutas>
 #  }
-# Mueve el jugador a cada una de las frutas usando la función LocalGameServer.move
+# Mueve el jugador a cada una de las frutas usando la función Game.move
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
@@ -89,7 +89,7 @@ LocalGameServer.register(server, "nombre_jugador")
 
 ```elixir
 {:ok, server} =
-  LocalGameServer.start_link(%{
+  GameServer.start_link(%{
     initial_fruits: [{500, 125, 20}, {300, 125, 20, :power_up}],
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} ->
@@ -108,9 +108,9 @@ SmartCells.KinoGame.new(server)
 * Come la fruta powerup, la de color violeta. Ignora la fruta normal amarilla.
 
 ```elixir
-LocalGameServer.register(server, "nombre_jugador")
+Game.register(server, "nombre_jugador")
 # Busca la posición de la fruta powerup
-# En LocalGameServer.view(server) encontrarás:
+# En Game.view(server) encontrarás:
 #   fruits: %{
 #     {coordenada_x_fruta_1, coordenada_y_fruta_1} => {tamaño, :power_up},
 #     <...resto de frutas>
@@ -121,15 +121,11 @@ LocalGameServer.register(server, "nombre_jugador")
 
 ## Level 4
 
-Instrucciones
-
-* Come primero la fruta powerup y dirígete después al enemigo para atacarlo.
-
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game4","livebook_object":"smart_cell"} -->
 
 ```elixir
 {:ok, server} =
-  LocalGameServer.start_link(%{
+  GameServer.start_link(%{
     initial_fruits: [{500, 125, 20}, {300, 125, 20, :power_up}],
     initial_enemies: [{"enemy", %{pos_x: 600, pos_y: 200, size: 20, score: 5000}}],
     powered_ticks_per_fruit_size: 50,
@@ -147,9 +143,13 @@ Instrucciones
 SmartCells.KinoGame.new(server)
 ```
 
+### Instrucciones
+
+* Come primero la fruta powerup y dirígete después al enemigo para atacarlo.
+
 ```elixir
-LocalGameServer.register(server, "nombre_jugador")
-# La posición del enemigo se puede encontrar en LocalGameServer.view(server):
+Game.register(server, "nombre_jugador")
+# La posición del enemigo se puede encontrar en Game.view(server):
 #  players: %{
 #    "nodo_jugador@host" => %{
 #       ...
@@ -163,15 +163,11 @@ LocalGameServer.register(server, "nombre_jugador")
 
 ## Level 5
 
-Instrucciones
-
-* Come las frutas por orden de cercanía.
-
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game5","livebook_object":"smart_cell"} -->
 
 ```elixir
 {:ok, server} =
-  LocalGameServer.start_link(%{
+  GameServer.start_link(%{
     initial_fruits: [
       {450, 125, 5, :power_up},
       {400, 70, 10},
@@ -198,8 +194,12 @@ Instrucciones
 SmartCells.KinoGame.new(server)
 ```
 
+### Instrucciones
+
+* Come las frutas por orden de cercanía.
+
 ```elixir
-LocalGameServer.register(server, "nombre_jugador")
+Game.register(server, "nombre_jugador")
 # Las coordenadas {x,y} de la fruta más cercana se pueden obtener con:
 #  GameUtils.closest_fruit(player, fruits)
 

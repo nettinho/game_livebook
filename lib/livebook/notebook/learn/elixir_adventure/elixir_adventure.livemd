@@ -6,7 +6,7 @@ Mix.install([
   :kino,
   :elixir_math,
   :req,
-  {:game_server, path: "../game_server"}
+  {:game_server, git: "https://github.com/nettinho/game_server.git"}
 ])
 
 {:ok, %{body: body}} = Req.get("http://localhost:4000/public/node")
@@ -18,7 +18,7 @@ server = String.to_atom(body)
 ## Game
 
 ```elixir
-GameServer.register(server, "net")
+GameServer.register(server, "nombre")
 ```
 
 ```elixir
