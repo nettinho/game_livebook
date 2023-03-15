@@ -6,7 +6,7 @@ FROM ${BASE_IMAGE} AS build
 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install --no-install-recommends -y \
-        build-essential git && \
+        build-essential ca-certificates libncurses5-dev git && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
@@ -86,5 +86,5 @@ RUN chmod -R go=u /app
 CMD [ "/app/bin/livebook", "start" ]
 
 # Appended by flyctl
-ENV ECTO_IPV6 true
-ENV ERL_AFLAGS "-proto_dist inet6_tcp"
+#ENV ECTO_IPV6 true
+#dENV ERL_AFLAGS "-proto_dist inet6_tcp"
