@@ -37,18 +37,12 @@ SmartCells.KinoGame.new(server)
 ### Intrucciones
 
 * Registra un jugador
-* Muevelo a la posición `{600, 125}`
+* Muévelo a la coordenada `{600, 125}` para comer la fruta.
 
 ```elixir
-LocalGameServer.register(server, "netto")
-# LocalGameServer.view(server)
-# LocalGameServer.move(server, {600, 125})
-
-# LocalGameServer.set_setting(server, :fruit_type_distribution, [{:power_up, 1}])
-# LocalGameServer.set_setting(server, :fruit_generated_probability, 50)
-# LocalGameServer.set_setting(server, :max_powered, 100_000)
-
-# Player.check(server)
+LocalGameServer.register(server, "nombre_jugador")
+# Mueve el jugador a la coordenada {600, 125} usando la siguiente función:
+#   LocalGameServer.move(server, {coordenada_x, coordenada_y})
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
@@ -71,17 +65,20 @@ SmartCells.KinoGame.new(server)
 ### Intrucciones
 
 * Registra un jugador
-* Busca las posiciones
+* Obtén la posición de las frutas.
+* Come todas las frutas, en cualquier orden.
 
 ```elixir
-LocalGameServer.register(server, "OLA")
-
-{pos, _} =
-  LocalGameServer.view(server)
-  |> Map.get(:fruits)
-  |> Enum.at(0)
-
-LocalGameServer.move(server, pos)
+LocalGameServer.register(server, "nombre_jugador")
+# La posición de las frutas se puede obtener con:
+#   LocalGameServer.view(server)
+# Encontrarás:
+#  fruits: %{
+#    {coordenada_x_fruta_1, coordenada_y_fruta_1} => {tamaño, :default},
+#    {coordenada_x_fruta_2, coordenada_y_fruta_2} => {tamaño, :default},
+#    <... resto de frutas>
+#  }
+# Mueve el jugador a cada una de las frutas usando la función LocalGameServer.move
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
@@ -108,26 +105,25 @@ SmartCells.KinoGame.new(server)
 
 ### Intrucciones
 
-* ve a por la fruta mágica
+* Come la fruta powerup, la de color violeta. Ignora la fruta normal amarilla.
 
 ```elixir
-LocalGameServer.register(server, "OLA")
-
-# {pos, _} = LocalGameServer.view(server)
-# |> Map.get(:fruits)
-# |> Enum.at(0)
-
-# LocalGameServer.move(server, pos)
-
-# LocalGameServer.view(server)
-
-# LocalGameServer.move(server, {500, 125})
-# LocalGameServer.move(server, {300, 125})
+LocalGameServer.register(server, "nombre_jugador")
+# Busca la posición de la fruta powerup
+# En LocalGameServer.view(server) encontrarás:
+#   fruits: %{
+#     {coordenada_x_fruta_1, coordenada_y_fruta_1} => {tamaño, :power_up},
+#     <...resto de frutas>
+#   }
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
 
 ## Level 4
+
+Instrucciones
+
+* Come primero la fruta powerup y dirígete después al enemigo para atacarlo.
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game4","livebook_object":"smart_cell"} -->
 
@@ -152,25 +148,24 @@ SmartCells.KinoGame.new(server)
 ```
 
 ```elixir
-LocalGameServer.register(server, "OLA")
-
-# {pos, _} = LocalGameServer.view(server)
-# |> Map.get(:fruits)
-# |> Enum.at(0)
-
-# LocalGameServer.move(server, pos)
-
-LocalGameServer.view(server)
-
-# LocalGameServer.move(server, {500, 125})
-# LocalGameServer.move(server, {300, 125})
-
-LocalGameServer.move(server, {600, 200})
+LocalGameServer.register(server, "nombre_jugador")
+# La posición del enemigo se puede encontrar en LocalGameServer.view(server):
+#  players: %{
+#    "nodo_jugador@host" => %{
+#       ...
+#       name: "enemy"
+#       pos: {coordenada_x_enemigo, coordenada_y_enemigo},
+#    }
+#  }
 ```
 
 <!-- livebook:{"branch_parent_index":0} -->
 
 ## Level 5
+
+Instrucciones
+
+* Come las frutas por orden de cercanía.
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game5","livebook_object":"smart_cell"} -->
 
@@ -204,23 +199,28 @@ SmartCells.KinoGame.new(server)
 ```
 
 ```elixir
-LocalGameServer.register(server, "net")
+LocalGameServer.register(server, "nombre_jugador")
+# Las coordenadas {x,y} de la fruta más cercana se pueden obtener con:
+#  GameUtils.closest_fruit(player, fruits)
 
+# Definición de un módulo Bot
 defmodule Bot do
+  # Función principal de ejecución
   def run(server) do
+    # Eliminación de posibles mensajes anteriores
     :c.flush()
+    # Entrada a un bucle que recibe continuamente mensajes
     loop_receive(server)
   end
 
   defp loop_receive(server) do
     receive do
       {:board_tick, %{status: :idle} = player, _players, fruits} ->
-        case GameUtils.closest_fruit(player, fruits) do
-          nil -> :ok
-          pos -> LocalGameServer.move(server, pos)
-        end
+        # Si el jugador se encuentra parado (:idle), nos movemos a la fruta más cercana
+        # Escribe aquí tu código
 
       _ ->
+        # Si el jugador se encuentra en otro estado (incluído movimiento), no hacemos nada:
         :ok
     end
 
@@ -228,5 +228,6 @@ defmodule Bot do
   end
 end
 
+# Ejecución del bot:
 Bot.run(server)
 ```
