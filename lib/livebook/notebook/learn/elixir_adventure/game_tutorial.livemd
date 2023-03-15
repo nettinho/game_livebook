@@ -15,6 +15,10 @@ Kino.SmartCell.register(SmartCells.Game4)
 Kino.SmartCell.register(SmartCells.Game5)
 ```
 
+## Game tutorial
+
+<!-- livebook:{"branch_parent_index":0} -->
+
 ## Level 1
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game1","livebook_object":"smart_cell"} -->
@@ -47,6 +51,8 @@ LocalGameServer.register(server, "netto")
 # Player.check(server)
 ```
 
+<!-- livebook:{"branch_parent_index":0} -->
+
 ## Level 2
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game2","livebook_object":"smart_cell"} -->
@@ -77,6 +83,8 @@ LocalGameServer.register(server, "OLA")
 
 LocalGameServer.move(server, pos)
 ```
+
+<!-- livebook:{"branch_parent_index":0} -->
 
 ## Level 3
 
@@ -116,6 +124,8 @@ LocalGameServer.register(server, "OLA")
 # LocalGameServer.move(server, {500, 125})
 # LocalGameServer.move(server, {300, 125})
 ```
+
+<!-- livebook:{"branch_parent_index":0} -->
 
 ## Level 4
 
@@ -157,6 +167,8 @@ LocalGameServer.view(server)
 
 LocalGameServer.move(server, {600, 200})
 ```
+
+<!-- livebook:{"branch_parent_index":0} -->
 
 ## Level 5
 
