@@ -739,8 +739,6 @@ defmodule Livebook.Session do
            ) do
       state = schedule_autosave(state)
 
-      IO.inspect(state, label: "session state")
-
       if file = state.data.file do
         Livebook.NotebookManager.add_recent_notebook(file, state.data.notebook.name)
       end

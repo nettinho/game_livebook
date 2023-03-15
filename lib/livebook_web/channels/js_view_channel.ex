@@ -58,7 +58,7 @@ defmodule LivebookWeb.JSViewChannel do
 
   def handle_in("disconnect", %{"ref" => ref}, socket) do
     socket =
-      if socket.assigns.ref_with_info[ref].count == 1 do
+      if Map.get(socket.assigns.ref_with_info[ref], :count) == 1 do
         Livebook.Session.unsubscribe_from_runtime_events(
           socket.assigns.session_id,
           "js_live",

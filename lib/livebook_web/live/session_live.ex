@@ -14,7 +14,7 @@ defmodule LivebookWeb.SessionLive do
 
   @impl true
   def mount(%{"id" => session_id}, _session, socket) do
-    user_id = socket.assigns.current_user.id |> IO.inspect(label: "user_id")
+    user_id = socket.assigns.current_user.id
     # We use the tracked sessions to locate the session pid, but then
     # we talk to the session process exclusively for getting all the information
     case Sessions.fetch_session(session_id) do

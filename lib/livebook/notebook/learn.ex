@@ -37,14 +37,35 @@ defmodule Livebook.Notebook.Learn do
   images_dir = Path.expand("learn/images", __DIR__)
 
   welcome_config = %{
-    path: Path.join(__DIR__, "learn/intro_to_livebook.livemd"),
+    path: Path.join(__DIR__, "learn/elixir_adventure/conceptos_basicos.livemd"),
     details: %{
-      description: "Get to know Livebook, see how it works, and learn its features.",
-      cover_url: "/images/logo.png"
+      description: "Aprende los conceptos básicos de Elixir",
+      cover_url: "/images/elixir.png"
     }
   }
 
   other_configs = [
+    %{
+      path: Path.join(__DIR__, "learn/elixir_adventure/game_tutorial.livemd"),
+      details: %{
+        description: "Familiarízate con los conceptos básicos del mini juego",
+        cover_url: "/images/elixir-portal.jpeg"
+      }
+    },
+    %{
+      path: Path.join(__DIR__, "learn/elixir_adventure/elixir_adventure.livemd"),
+      details: %{
+        description: "Última parte del Workshop",
+        cover_url: "/images/logo.png"
+      }
+    },
+    %{
+      path: Path.join(__DIR__, "learn/intro_to_livebook.livemd"),
+      details: %{
+        description: "Get to know Livebook, see how it works, and learn its features.",
+        cover_url: "/images/logo.png"
+      }
+    },
     %{
       path: Path.join(__DIR__, "learn/distributed_portals_with_elixir.livemd"),
       image_paths: [

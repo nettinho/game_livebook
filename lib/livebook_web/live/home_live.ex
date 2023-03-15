@@ -76,7 +76,7 @@ defmodule LivebookWeb.HomeLive do
         </div>
 
         <div id="starred-notebooks" role="region" aria-label="starred notebooks">
-          <div class="my-4 flex items-center md:items-end justify-between">
+          <%!-- <div class="my-4 flex items-center md:items-end justify-between">
             <h2 class="uppercase font-semibold text-gray-500 text-sm md:text-base">
               Starred notebooks
             </h2>
@@ -91,9 +91,9 @@ defmodule LivebookWeb.HomeLive do
                 <span class="font-semibold">Show more</span>
               <% end %>
             </button>
-          </div>
+          </div> --%>
           <%= if @starred_notebooks == [] do %>
-            <.no_entries>
+            <%!-- <.no_entries>
               Your starred notebooks will appear here. <br />
               First time around? Check out the notebooks below to get started.
               <:actions>
@@ -102,7 +102,7 @@ defmodule LivebookWeb.HomeLive do
                   <.remix_icon icon="arrow-right-line" class="align-middle ml-1" />
                 </.link>
               </:actions>
-            </.no_entries>
+            </.no_entries> --%>
             <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
               <% # Note: it's fine to use stateless components in this comprehension,
               # because @notebook_infos never change %>

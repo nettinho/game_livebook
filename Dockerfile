@@ -84,3 +84,7 @@ COPY --from=build /app/_build/prod/rel/livebook /app
 RUN chmod -R go=u /app
 
 CMD [ "/app/bin/livebook", "start" ]
+
+# Appended by flyctl
+ENV ECTO_IPV6 true
+ENV ERL_AFLAGS "-proto_dist inet6_tcp"
