@@ -14,9 +14,6 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ### Iniciamos
 
-El juego de **Elixir Adventure** consiste en una serie de instrucciones para mover
-un jugador representado por un círculo con vuestro nombre, que tendrá la misión de moverse sobre el plano del juego para capturar las "frutas" que darán puntos, también existen frutas especiales con un "power up" con el que podrán atacar a otros jugadores para quitarles puntos.
-
 ¿Qué es lo que aprenderemos?
 
 * Elixir Basic Types

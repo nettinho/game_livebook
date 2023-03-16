@@ -17,15 +17,23 @@ Kino.SmartCell.register(SmartCells.Game5)
 
 ## Game tutorial
 
+En el mini-juego de **Elixir Adventure** tendrás que dar instrucciones para mover
+tu jugador, representado por un círculo con el nombre de 3 caractéres.
+
+A continuación están 5 niveles para guiarte por los conceptos básicos del juego.
+
+En cada nivel, tras ejecutar la primera celda (_que pone 'Evalúa la celda par aactivar el mapa'_), se mostra el mapa del nivel. Abajo estará la descripción y instrucciones básicas del nível. 
+En seguida hay una celda de código dónde deberás ejecutar los comandos para la solución. Al ejecutar el mapa, quedará disponible en el entorno una variable `server` que deberás utilizar para interactuar con el mapa.
+
 <!-- livebook:{"branch_parent_index":0} -->
 
-## Level 1
+## Level 1 - Entrar y mover
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game1","livebook_object":"smart_cell"} -->
 
 ```elixir
 {:ok, server} =
-  GameServer.start_link(%{
+  GameServer.start_link(:local, %{
     initial_fruit: {600, 125, 20},
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} -> Enum.empty?(fruits) end
@@ -33,6 +41,10 @@ Kino.SmartCell.register(SmartCells.Game5)
 
 SmartCells.KinoGame.new(server)
 ```
+
+### Descripción
+
+En ese nível aprenderás a registrar tu jugador en el mapa y moverlo. Deberás enviar el comando de `move` a la posición de la fruta.
 
 ### Intrucciones
 
@@ -47,13 +59,13 @@ Game.register(server, "nombre_jugador")
 
 <!-- livebook:{"branch_parent_index":0} -->
 
-## Level 2
+## Level 2 - Comer todas las frutas
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game2","livebook_object":"smart_cell"} -->
 
 ```elixir
 {:ok, server} =
-  GameServer.start_link(%{
+  GameServer.start_link(:local, %{
     initial_fruits_count: 5,
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} -> Enum.empty?(fruits) end
@@ -61,6 +73,12 @@ Game.register(server, "nombre_jugador")
 
 SmartCells.KinoGame.new(server)
 ```
+
+### Descripción
+
+Aqui deberás solicitar el estado del juego para descubrir dónde se han generado aleatoriamente las frutas. Luego tendrás que ir a cada una de las posiciones para recoger todas las frutas.
+
+**Atención**: Si mandas 2 comandos de `move` seguidos, no se encolarán. El segundo comando sobrescribirá el anterior.
 
 ### Intrucciones
 
@@ -83,13 +101,13 @@ Game.register(server, "nombre_jugador")
 
 <!-- livebook:{"branch_parent_index":0} -->
 
-## Level 3
+## Level 3 - Fruta PowerUp
 
 <!-- livebook:{"attrs":{},"chunks":null,"kind":"Elixir.SmartCells.Game3","livebook_object":"smart_cell"} -->
 
 ```elixir
 {:ok, server} =
-  GameServer.start_link(%{
+  GameServer.start_link(:local, %{
     initial_fruits: [{500, 125, 20}, {300, 125, 20, :power_up}],
     fruit_generated_probability: 0,
     success_func: fn %{fruits: fruits} ->
@@ -102,6 +120,10 @@ Game.register(server, "nombre_jugador")
 
 SmartCells.KinoGame.new(server)
 ```
+
+### Descripción
+
+Hay frutas que brillan y al comerlas te dejan en un modo especial. Estas frutas son del tipo `:power_up`. En este nivel verás 2 frutas, y deberás buscar y comer la fruta power_up
 
 ### Intrucciones
 
@@ -125,7 +147,7 @@ Game.register(server, "nombre_jugador")
 
 ```elixir
 {:ok, server} =
-  GameServer.start_link(%{
+  GameServer.start_link(:local, %{
     initial_fruits: [{500, 125, 20}, {300, 125, 20, :power_up}],
     initial_enemies: [{"enemy", %{pos_x: 600, pos_y: 200, size: 20, score: 5000}}],
     powered_ticks_per_fruit_size: 50,
@@ -167,7 +189,7 @@ Game.register(server, "nombre_jugador")
 
 ```elixir
 {:ok, server} =
-  GameServer.start_link(%{
+  GameServer.start_link(:local, %{
     initial_fruits: [
       {450, 125, 5, :power_up},
       {400, 70, 10},
