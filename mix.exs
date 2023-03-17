@@ -104,8 +104,8 @@ defmodule Livebook.MixProject do
       {:floki, ">= 0.27.0", only: :test},
       {:bypass, "~> 2.1", only: :test},
       {:connection, "~> 1.1.0"},
-      {:game_server, path: "../game_server"}
-      # {:game_server, git: "https://github.com/nettinho/game_server.git"}
+      # {:game_server, path: "../game_server"}
+      {:game_server, git: "https://github.com/nettinho/game_server.git"}
     ]
   end
 
