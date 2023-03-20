@@ -105,7 +105,7 @@ defmodule Livebook.MixProject do
       {:bypass, "~> 2.1", only: :test},
       {:connection, "~> 1.1.0"},
       # {:game_server, path: "../game_server"}
-      {:game_server, git: "https://github.com/nettinho/game_server.git"}
+      {:game_server, git: "https://github.com/nettinho/game_server.git", tag: "0.0.1"}
     ]
   end
 
