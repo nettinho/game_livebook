@@ -1,0 +1,290 @@
+# Conceptos básicos de Elixir
+
+```elixir
+defmodule Example do
+  def other_function(param, another), do: param <> " " <> another
+  def other_function(param), do: param
+  def new_function(param, another), do: param <> " " <> another
+  def new_function(param), do: param
+  def baz(param, another), do: param <> " " <> another
+  def baz(param), do: param
+  def bar(param, another), do: param <> " " <> another
+  def bar(param), do: param
+  def foo(param, another), do: param <> " " <> another
+  def foo(param), do: param
+end
+```
+
+## Introducción
+
+Este notebook contiene una pequeña introducción sobre el lenguaje de programación Elixir
+
+Exploraremos los conceptos básicos para definir una estrategia de movimientos para el juego **Elixir Adventure**, desarrollado por el equipo de Truedat.
+
+Para más información sobre Elixir, puedes acceder a los siguientes enlaces: [Elixir's
+Getting Started guide](https://elixir-lang.org/getting-started/introduction.html)
+y [Elixir Learning](https://elixir-lang.org/learning.html).
+
+<!-- livebook:{"break_markdown":true} -->
+
+### Iniciamos
+
+¿Qué es lo que aprenderemos?
+
+* Elixir Basic Types
+* Pattern matching
+* Inmutability
+* Piping
+* Enum:
+  * .filter
+  * .find
+* Send / Receive
+
+¿Intrigado? ¡Empecemos!
+
+## Inmutabilidad
+
+Inmutabilidad implica que el estado de los datos no puede ser alterado después de ser creado.
+
+Por ejemplo:
+
+```elixir
+my_map = %{a: "valor_a"}
+IO.inspect(Map.put(my_map, :b, "valor_b"), label: "Nuevo mapa")
+IO.inspect(my_map, label: "Mapa original sigue siendo lo mismo")
+```
+
+Esto no significa que una variable no se pueda reasignar:
+
+```elixir
+my_map = %{a: "valor_a"}
+IO.inspect(my_map, label: "my_map")
+my_map = Map.put(my_map, :b, "valor_b")
+IO.inspect(my_map, label: "my_map reasignado a nuevo mapa")
+```
+
+## Pipes
+
+Cuantas veces hemos ~~hecho~~ encontrado un codigo como este:
+
+<!-- livebook:{"break_markdown":true} -->
+
+```java
+public int do_Something(int param){
+  return foo(bar(baz(new_function(other_function(param)))))
+} 
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+Esto se arreglaría refactorizando el código:
+
+<!-- livebook:{"break_markdown":true} -->
+
+```java
+public int do_Something(int param){
+  obj a = other_function(param)
+  obj b = new_function(a)
+  obj c = baz(b)
+  obj d = bar(c)
+  obj e = foo(d)
+  
+  return e;
+}
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+El operador pipe permite componer funciones en Elixir. Toma el resultado de la expresión anterior y lo pasa como **primer** argumento de la siguiente función.
+
+```elixir
+Example.other_function("Elixir")
+|> Example.new_function()
+|> Example.baz()
+|> Example.bar()
+|> Example.foo()
+```
+
+Esto evita tener que hacer una anidación de funciones o generar objetos en memoria con un tiempo de vida infimo:
+
+```elixir
+Example.other_function("Elixir")
+|> Example.new_function()
+|> Example.baz()
+|> Example.bar("Adventure")
+|> Example.foo()
+```
+
+## Pattern matching
+
+En Elixir el operador `=` funciona de una manera un poco diferente a como funciona en otros lenguajes de programación.
+
+```elixir
+x = 1
+x
+```
+
+Por aquí todo bien, pero ¿qué pasa si invertimos los operadores?
+
+```elixir
+1 = x
+```
+
+¡Funciona! Esto es por que Elixir trata de hacer match del lado derecho contra el lado izquierdo, y dado que los dos son `1` funciona. Intentemos otra cosa:
+
+```elixir
+2 = x
+```
+
+Ahora los lados no son iguales y retorna un match error. En Elixir también se utiliza el pattern maching para las colecciones. Por ejemplo podemos utilizar un `[head | tail]` para extraer el head (el primer elemento) y el tail (el resto) de una lista.
+
+```elixir
+[head | tail] = [1, 2, 3]
+IO.inspect(head)
+IO.inspect(tail)
+```
+
+Si intentamos hacer un matching con una lista vacía contra un `[head | tail]` nos retorna un error de tipo match.
+
+```elixir
+[head | tail] = []
+```
+
+Finalmente, podemos utilizar la expresión `[head | tail]` para añadir elementos al principio de la lista.
+
+```elixir
+list = [1, 2, 3]
+[0 | list]
+```
+
+También podemos realizar el pattern macthing con tuplas. Esto se suele utilizar para hacer match con el tipo de resultado en la llamada de una función.  Por ejemplo, la función  `Date.from_iso8601(string)` retorna `{:ok, date}` si el string representa una fecha válida en un formato  `YYYY-MM-DD`, por el contrario retorna un `{:error, reason}`:
+
+```elixir
+# A valid date
+Date.from_iso8601("2020-02-29")
+```
+
+```elixir
+# An invalid date
+Date.from_iso8601("2020-02-30")
+```
+
+Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento 
+diferente si la fecha es válida o no? Podemos utilizar un `case` 
+con un pattern maching con las diferentes tuplas:
+
+```elixir
+# Give an invalid date as input
+input = "2020-02-30"
+
+# And then match on the return value
+case Date.from_iso8601(input) do
+  {:ok, date} ->
+    "We got a valid date: #{inspect(date)}"
+
+  {:error, reason} ->
+    "Oh no, the date is invalid. Reason: #{inspect(reason)}"
+end
+```
+
+En este ejemplo, estamos utilizando `case` para realizar un pattern matching con el retorno
+de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con 
+`{:ok, date}` y otra con `{:error, reason}`.
+
+Ahora intenta cambiar la variable del `input` del código de arriba y reevalua la celda.
+¿Qué pasa cuando tienes una fecha válida?
+
+También podemos utilizar el pattern maching con mapas. Esto se utiliza para extraer los valores de las claves.
+
+```elixir
+map = %{:elixir => :functional, :python => :object_oriented}
+%{:elixir => type} = map
+type
+```
+
+Si la clave no existe en el mapa, esto provoca una excepción.
+
+```elixir
+%{:c => type} = map
+```
+
+Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional, 
+podemos realizar un pattern matching utilizando las funciones, combinando lo aprendido anteriormente.
+
+Utilizando el ejemplo de las fechas visto anteriormente, podemos acceder a diferentes funciones dependiendo de lo que recibamos en los parámetros, en nuestro caso un `{:ok, date}` y un `{:error, reason}`.
+
+```elixir
+defmodule MyModule do
+  def check_my_date({:ok, date}) do
+    "We got a valid date: #{inspect(date)}"
+    :valid_date
+  end
+
+  def check_my_date({:error, reason}) do
+    "Oh no, the date is invalid. Reason: #{inspect(reason)}"
+    :invalid_date
+  end
+end
+```
+
+```elixir
+input = "2020-02-30"
+
+MyModule.check_my_date(Date.from_iso8601(input))
+```
+
+Si cambiamos el `input` a una fecha correcta del código de arriba podemos observar un comportamiento parecido al del `case`
+
+## Ecto Phoenix Django
+
+## DataFrames
+
+## Procesos y concurrencia
+
+Elixir está preparado de forma nativa para realizar millones de operaciones de forma concurrente y trabajar multi hilo
+
+<!-- livebook:{"break_markdown":true} -->
+
+La forma mas sencilla que tenemos para realizar esta operacion es con una la ejecución de una función en un hilo que se crea, ejecuta y muere.
+
+```elixir
+pid = spawn(fn -> IO.puts("¡Hola desde un proceso!") end)
+```
+
+Esta funcionalidad se puede ampliar con paso de mensajes
+
+```elixir
+pid =
+  spawn(fn ->
+    receive do
+      msg -> IO.puts("Recibí el mensaje: #{msg}")
+    end
+  end)
+
+send(pid, "Hola desde otro proceso")
+```
+
+Tambien disponemos de OTP (Open Telecom Platform) que nos permite gestionar y supervisar procesos hijos, se pueden definir
+
+## Y con esto finalizamos esta guía básica de Elixir...
+
+Y esperamos que no sea el fin, te einvitamos a seguir conociendo este maravilloso
+lenguaje de programación.
+
+Si te interesa, te invitamos a las charlas que se dan en Meetup Madrid-Elxir
+
+* [Meetup Madrid-Elixir ](https://www.meetup.com/es-ES/madrid-elixir/)
+
+Si quieres aprender más, te dejamos estos enlaces
+
+* [Elixir website](http://elixir-lang.org)
+* [Started guide](https://elixir-lang.org/getting-started/introduction.html).
+* [Many of the available learning resources](https://elixir-lang.org/learning.html).
+
+Si quieres conocer sobre el proyecto de este LiveBook te dejamos el siguiente enlace:
+
+* [Elixir and Livebook notebook](/learn/notebooks/elixir-and-livebook).
+
+Finalmente queremos agradecer a la Universidad Politécnica de Madrid por permitirnos participar en TryIt.
+
+¡Esperamos veros pronto!
