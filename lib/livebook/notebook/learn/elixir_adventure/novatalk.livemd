@@ -17,9 +17,7 @@ end
 
 ## Introducción
 
-Este notebook contiene una pequeña introducción sobre el lenguaje de programación Elixir
-
-Exploraremos los conceptos básicos para definir una estrategia de movimientos para el juego **Elixir Adventure**, desarrollado por el equipo de Truedat.
+Este notebook contiene una pequeña introducción sobre el lenguaje de programación Elixir.
 
 Para más información sobre Elixir, puedes acceder a los siguientes enlaces: [Elixir's
 Getting Started guide](https://elixir-lang.org/getting-started/introduction.html)
@@ -29,22 +27,25 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ### Iniciamos
 
-¿Qué es lo que aprenderemos?
-
-* Elixir Basic Types
-* Pattern matching
-* Inmutability
+* ¿Qué es un lenguaje funcional?
+* Comparativa de P. Funcional con  P.O.O & Python
+* Data Frames (explorer)
+* Ecto / Phoenix vs Django?
 * Piping
-* Enum:
-  * .filter
-  * .find
-* Send / Receive
+* Pattern matching
+* Procesos y concurrencia
+* ChatGPT
+* Demo
 
 ¿Intrigado? ¡Empecemos!
 
+## ¿Qué es un lenguaje funcional?
+
+La programación funcional es un estilo de codificación que se centra en el uso de funciones para procesar los datos. Es limpio, predecible, facilita la depuración y el desarrollo de software confiable.
+
 ## Inmutabilidad
 
-Inmutabilidad implica que el estado de los datos no puede ser alterado después de ser creado.
+Inmutabilidad implica que el estado de los datos no pueden ser alterados después de ser creados.
 
 Por ejemplo:
 
@@ -140,8 +141,8 @@ Ahora los lados no son iguales y retorna un match error. En Elixir también se u
 
 ```elixir
 [head | tail] = [1, 2, 3]
-IO.inspect(head)
-IO.inspect(tail)
+IO.inspect(head, label: "head ->")
+IO.inspect(tail, label: "tail ->")
 ```
 
 Si intentamos hacer un matching con una lista vacía contra un `[head | tail]` nos retorna un error de tipo match.
@@ -194,19 +195,7 @@ de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una ha
 Ahora intenta cambiar la variable del `input` del código de arriba y reevalua la celda.
 ¿Qué pasa cuando tienes una fecha válida?
 
-También podemos utilizar el pattern maching con mapas. Esto se utiliza para extraer los valores de las claves.
-
-```elixir
-map = %{:elixir => :functional, :python => :object_oriented}
-%{:elixir => type} = map
-type
-```
-
-Si la clave no existe en el mapa, esto provoca una excepción.
-
-```elixir
-%{:c => type} = map
-```
+<!-- livebook:{"break_markdown":true} -->
 
 Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional, 
 podemos realizar un pattern matching utilizando las funciones, combinando lo aprendido anteriormente.
