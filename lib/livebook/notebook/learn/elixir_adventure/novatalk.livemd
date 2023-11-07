@@ -31,9 +31,10 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ¿Qué es lo que aprenderemos?
 
-* Elixir Basic Types
+* Elixir vs Python
+* Elixir Tipos Básicos
 * Pattern matching
-* Inmutability
+* Inmutabilidad
 * Piping
 * Enum:
   * .filter
@@ -41,6 +42,77 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 * Send / Receive
 
 ¿Intrigado? ¡Empecemos!
+
+## Elixir vs Python
+
+Es innegable que python nos ofrece muy buenas alternativas para muchos dominios
+de desarrollo como `aplicaciones web`, `tratamiento de datos` o `IA` pero los
+desarrolladores de Elixir han estado trabajando duro estos años para hacer de
+este lenguaje uno de los más versátiles.
+
+Es un lenguaje moderno cuya estructura y funcionamiento esta muy alineado al
+desarrollo actual.
+
+### Compilado vs Interpretado
+
+La primera gran diferencia es en como se interpreta el código en ambos
+lenguajes. Python es un lenguaje interpretado que ejecuta el intérprete de
+python mientras que Elixir es compilado, se genera un bytecode que será
+ejecutado por la maquina virtual de Erlang.
+
+### Funcional vs Imperativo
+
+El paradigma de programación de Elixir es Funcional, donde todas las funciones
+definidas son funciones puras. Las funciones están organizadas en módulos y se
+puede definir interfaces usando Behaviours y polimorfismo usando Protocols.
+
+Python sin embargo se desarrollo como un lenguaje interpretado que termino
+derivando en un paradigma de POO donde el código puede estar organizado en
+clases y métodos.
+
+Ejemplo:
+
+```python
+  class Car:
+    def __init__(self):
+      self.started = false
+
+    def start(self):
+      self.started = true
+```
+
+En Python podemos tener la clase coche que tiene un atributo que representa si
+el coche esta arrancado o no.
+
+```elixir
+defmodule Car do
+  defstruct started: false
+
+  def start(%Car{} = car) do
+    Map.put(car, :started, true)
+  end
+end
+```
+
+En elixir definimos un modulo que a su vez define una estructura con el estado
+del coche. En el mismo módulo se define una función que recibe como parámetro un
+struct del tipo coche y devuelve una copia de ese struct con el parámetro
+started a true (Funciones puras e inmutabilidad)
+
+### Dominios de desarrollo y librerías
+
+Como se mencionaba en la introducción de este apartado elixir ha tenido un gran
+desarrollo en los últimos años, acaparando dominios de desarrollo de los que
+anteriormente estaba fuera. A continuación se muestra una comparativa de
+librerías de python y su equivalente en elixir según los distintos dominios de
+desarrollo
+
+| Dominio              | Python                 | Elixir    |
+| -------------------- | ---------------------- | --------- |
+| Notebooks            | jupyter                | Livebook  |
+| Aplicaciones Web     | Django, flask, fastApi | Phoenix   |
+| Tratamiento de Datos | Pandas                 | Explorer  |
+| Machine Learning     | Keras, Tensorflow      | Bumblebee |
 
 ## Inmutabilidad
 
@@ -72,7 +144,7 @@ Cuantas veces hemos ~~hecho~~ encontrado un codigo como este:
 ```java
 public int do_Something(int param){
   return foo(bar(baz(new_function(other_function(param)))))
-} 
+}
 ```
 
 <!-- livebook:{"break_markdown":true} -->
@@ -88,7 +160,7 @@ public int do_Something(int param){
   obj c = baz(b)
   obj d = bar(c)
   obj e = foo(d)
-  
+
   return e;
 }
 ```
@@ -169,8 +241,8 @@ Date.from_iso8601("2020-02-29")
 Date.from_iso8601("2020-02-30")
 ```
 
-Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento 
-diferente si la fecha es válida o no? Podemos utilizar un `case` 
+Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento
+diferente si la fecha es válida o no? Podemos utilizar un `case`
 con un pattern maching con las diferentes tuplas:
 
 ```elixir
@@ -188,7 +260,7 @@ end
 ```
 
 En este ejemplo, estamos utilizando `case` para realizar un pattern matching con el retorno
-de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con 
+de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con
 `{:ok, date}` y otra con `{:error, reason}`.
 
 Ahora intenta cambiar la variable del `input` del código de arriba y reevalua la celda.
@@ -208,7 +280,7 @@ Si la clave no existe en el mapa, esto provoca una excepción.
 %{:c => type} = map
 ```
 
-Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional, 
+Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional,
 podemos realizar un pattern matching utilizando las funciones, combinando lo aprendido anteriormente.
 
 Utilizando el ejemplo de las fechas visto anteriormente, podemos acceder a diferentes funciones dependiendo de lo que recibamos en los parámetros, en nuestro caso un `{:ok, date}` y un `{:error, reason}`.
