@@ -241,17 +241,11 @@ Si cambiamos el `input` a una fecha correcta del código de arriba podemos obser
 
 ## Procesos y concurrencia
 
-Elixir está preparado de forma nativa para realizar millones de operaciones de forma concurrente y trabajar multi hilo
+Elixir está preparado de forma nativa para realizar millones de operaciones de forma concurrente y trabajar multi hilo.
 
-<!-- livebook:{"break_markdown":true} -->
+En Elixir, la concurrencia se logra utilizando procesos ligeros llamados "actores". Cada proceso tiene su propia área de memoria aislada y no comparte estado con otros procesos. Esto proporciona un entorno seguro y eficiente para la concurrencia.
 
-La forma mas sencilla que tenemos para realizar esta operacion es con una la ejecución de una función en un hilo que se crea, ejecuta y muere.
-
-```elixir
-pid = spawn(fn -> IO.puts("¡Hola desde un proceso!") end)
-```
-
-Esta funcionalidad se puede ampliar con paso de mensajes
+Podemos crear procesos como en muchos otros lenguajes.
 
 ```elixir
 pid =
@@ -264,7 +258,89 @@ pid =
 send(pid, "Hola desde otro proceso")
 ```
 
-Tambien disponemos de OTP (Open Telecom Platform) que nos permite gestionar y supervisar procesos hijos, se pueden definir
+**OTP**
+
+Es un conjunto de bibliotecas que permiten gestionar específicamente la concurrencia, GenServers, Supervisores, Agentes. Teniendo como principal meta conseguir sistemas escalables, distribuidos, concurrentes y tolerantes a fallos.
+
+<!-- livebook:{"break_markdown":true} -->
+
+Podemos lanzar procesos sencillos con Task, si no queremos gestionar un estado interno ni comunicacion mediante mensajes.
+
+```elixir
+task = Task.async(fn -> IO.puts("Tarea en segundo plano") end)
+Task.await(task)
+```
+
+```elixir
+tasks =
+  Enum.map(1..5, fn i ->
+    Task.async(fn -> IO.puts("Tarea #{i}") end)
+  end)
+
+Enum.each(tasks, &Task.await/1)
+```
+
+O Agentes que pueden realizar tareas y mantener estados simples, como un log de llamadas.
+
+```elixir
+{:ok, agent} = Agent.start_link(fn -> %{} end)
+Agent.update(agent, fn state -> Map.update(state, :solicitudes, 0, &(&1 + 1)) end)
+```
+
+Gen Server es un modulo dentro de OTP que nos proporciona una forma estructurada de crear un proceso que encapsule estado y logica de procesamiento de mensajes, ademas de garantizar que cada mensaje solo se procesa una vez.
+
+Los usos mas típicos con sistemas de colas, servidores, gestión de conexiones ...
+
+```elixir
+defmodule MyServer do
+  use GenServer
+
+  def start_link(_args) do
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+  end
+
+  def init(:ok) do
+    {:ok, %{}}
+  end
+
+  def handle_cast({:add, value}, state) do
+    new_state = Map.update!(state, :value, 0, &(&1 + value))
+    {:noreply, new_state}
+  end
+
+  def handle_call(:get, _from, state) do
+    {:reply, Map.get(state, :value, 0), state}
+  end
+end
+```
+
+Tambien disponemos de un sistema de supervision de procesos dentro de OTP. Esto nos da muchisima potencia, podemos arrancar miles de hilos que gestionen procesos en paralelo. Y definir estrategias de acción para reaccionar a los ciclos de vida de los procesos.
+
+* Si un proceso muere, reiniciar todos los procesos
+* Si un proceso muere, volver a levantarlo
+* ...
+
+Let It Crash.
+
+```elixir
+defmodule MyApp.Supervisor do
+  use Supervisor
+
+  def start_link do
+    Supervisor.start_link(__MODULE__, :ok)
+  end
+
+  def init(:ok) do
+    children = [
+      worker(MyApp.Worker, [])
+    ]
+
+    supervise(children, strategy: :one_for_one)
+  end
+end
+```
+
+## Chat GPT
 
 ## Y con esto finalizamos esta guía básica de Elixir...
 
