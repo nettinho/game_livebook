@@ -27,10 +27,12 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ### Iniciamos
 
+
 * ¿Qué es un lenguaje funcional?
-* Comparativa de P. Funcional con  P.O.O & Python
-* Data Frames (explorer)
-* Ecto / Phoenix vs Django?
+* Inmutabilidad
+* Elixir vs Python
+* Elixir Tipos Básicos
+* Pattern matching
 * Piping
 * Pattern matching
 * Procesos y concurrencia
@@ -64,6 +66,80 @@ my_map = Map.put(my_map, :b, "valor_b")
 IO.inspect(my_map, label: "my_map reasignado a nuevo mapa")
 ```
 
+
+## Elixir vs Python
+
+Es innegable que python nos ofrece muy buenas alternativas para muchos dominios
+de desarrollo como `aplicaciones web`, `tratamiento de datos` o `IA` pero los
+desarrolladores de Elixir han estado trabajando duro estos años para hacer de
+este lenguaje uno de los más versátiles.
+
+Es un lenguaje moderno cuya estructura y funcionamiento esta muy alineado al
+desarrollo actual.
+
+### Compilado vs Interpretado
+
+La primera gran diferencia es en como se interpreta el código en ambos
+lenguajes. Python es un lenguaje interpretado que ejecuta el intérprete de
+python mientras que Elixir es compilado, se genera un bytecode que será
+ejecutado por la maquina virtual de Erlang.
+
+### Funcional vs Imperativo
+
+El paradigma de programación de Elixir es Funcional, donde todas las funciones
+definidas son funciones puras. Las funciones están organizadas en módulos y se
+puede definir interfaces usando Behaviours y polimorfismo usando Protocols.
+
+Python sin embargo se desarrollo como un lenguaje interpretado que termino
+derivando en un paradigma de POO donde el código puede estar organizado en
+clases y métodos.
+
+Ejemplo:
+
+```python
+  class Car:
+    def __init__(self):
+      self.started = false
+
+    def start(self):
+      self.started = true
+```
+
+En Python podemos tener la clase coche que tiene un atributo que representa si
+el coche esta arrancado o no.
+
+```elixir
+defmodule Car do
+  defstruct started: false
+
+  def start(%Car{} = car) do
+    Map.put(car, :started, true)
+  end
+end
+```
+
+En elixir definimos un modulo que a su vez define una estructura con el estado
+del coche. En el mismo módulo se define una función que recibe como parámetro un
+struct del tipo coche y devuelve una copia de ese struct con el parámetro
+started a true (Funciones puras e inmutabilidad)
+
+### Dominios de desarrollo y librerías
+
+Como se mencionaba en la introducción de este apartado elixir ha tenido un gran
+desarrollo en los últimos años, acaparando dominios de desarrollo de los que
+anteriormente estaba fuera. A continuación se muestra una comparativa de
+librerías de python y su equivalente en elixir según los distintos dominios de
+desarrollo
+
+| Dominio              | Python                 | Elixir    |
+| -------------------- | ---------------------- | --------- |
+| Notebooks            | jupyter                | Livebook  |
+| Aplicaciones Web     | Django, flask, fastApi | Phoenix   |
+| Tratamiento de Datos | Pandas                 | Explorer  |
+| Machine Learning     | Keras, Tensorflow      | Bumblebee |
+
+
+
 ## Pipes
 
 Cuantas veces hemos ~~hecho~~ encontrado un codigo como este:
@@ -73,7 +149,7 @@ Cuantas veces hemos ~~hecho~~ encontrado un codigo como este:
 ```java
 public int do_Something(int param){
   return foo(bar(baz(new_function(other_function(param)))))
-} 
+}
 ```
 
 <!-- livebook:{"break_markdown":true} -->
@@ -89,7 +165,7 @@ public int do_Something(int param){
   obj c = baz(b)
   obj d = bar(c)
   obj e = foo(d)
-  
+
   return e;
 }
 ```
@@ -170,8 +246,8 @@ Date.from_iso8601("2020-02-29")
 Date.from_iso8601("2020-02-30")
 ```
 
-Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento 
-diferente si la fecha es válida o no? Podemos utilizar un `case` 
+Ahora, ¿qué pasaría si queremos que nuestro código tenga un comportamiento
+diferente si la fecha es válida o no? Podemos utilizar un `case`
 con un pattern maching con las diferentes tuplas:
 
 ```elixir
@@ -189,7 +265,7 @@ end
 ```
 
 En este ejemplo, estamos utilizando `case` para realizar un pattern matching con el retorno
-de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con 
+de la función `Date.from_iso8601`. Tenemos un `case` con dos cláusulas, una hace un match con
 `{:ok, date}` y otra con `{:error, reason}`.
 
 Ahora intenta cambiar la variable del `input` del código de arriba y reevalua la celda.
@@ -197,7 +273,7 @@ Ahora intenta cambiar la variable del `input` del código de arriba y reevalua l
 
 <!-- livebook:{"break_markdown":true} -->
 
-Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional, 
+Pero esto no se termina aquí, una las ventajas de que Elixir sea un lenguaje funcional,
 podemos realizar un pattern matching utilizando las funciones, combinando lo aprendido anteriormente.
 
 Utilizando el ejemplo de las fechas visto anteriormente, podemos acceder a diferentes funciones dependiendo de lo que recibamos en los parámetros, en nuestro caso un `{:ok, date}` y un `{:error, reason}`.
@@ -230,17 +306,11 @@ Si cambiamos el `input` a una fecha correcta del código de arriba podemos obser
 
 ## Procesos y concurrencia
 
-Elixir está preparado de forma nativa para realizar millones de operaciones de forma concurrente y trabajar multi hilo
+Elixir está preparado de forma nativa para realizar millones de operaciones de forma concurrente y trabajar multi hilo.
 
-<!-- livebook:{"break_markdown":true} -->
+En Elixir, la concurrencia se logra utilizando procesos ligeros llamados "actores". Cada proceso tiene su propia área de memoria aislada y no comparte estado con otros procesos. Esto proporciona un entorno seguro y eficiente para la concurrencia.
 
-La forma mas sencilla que tenemos para realizar esta operacion es con una la ejecución de una función en un hilo que se crea, ejecuta y muere.
-
-```elixir
-pid = spawn(fn -> IO.puts("¡Hola desde un proceso!") end)
-```
-
-Esta funcionalidad se puede ampliar con paso de mensajes
+Podemos crear procesos como en muchos otros lenguajes.
 
 ```elixir
 pid =
@@ -253,7 +323,89 @@ pid =
 send(pid, "Hola desde otro proceso")
 ```
 
-Tambien disponemos de OTP (Open Telecom Platform) que nos permite gestionar y supervisar procesos hijos, se pueden definir
+**OTP**
+
+Es un conjunto de bibliotecas que permiten gestionar específicamente la concurrencia, GenServers, Supervisores, Agentes. Teniendo como principal meta conseguir sistemas escalables, distribuidos, concurrentes y tolerantes a fallos.
+
+<!-- livebook:{"break_markdown":true} -->
+
+Podemos lanzar procesos sencillos con Task, si no queremos gestionar un estado interno ni comunicacion mediante mensajes.
+
+```elixir
+task = Task.async(fn -> IO.puts("Tarea en segundo plano") end)
+Task.await(task)
+```
+
+```elixir
+tasks =
+  Enum.map(1..5, fn i ->
+    Task.async(fn -> IO.puts("Tarea #{i}") end)
+  end)
+
+Enum.each(tasks, &Task.await/1)
+```
+
+O Agentes que pueden realizar tareas y mantener estados simples, como un log de llamadas.
+
+```elixir
+{:ok, agent} = Agent.start_link(fn -> %{} end)
+Agent.update(agent, fn state -> Map.update(state, :solicitudes, 0, &(&1 + 1)) end)
+```
+
+Gen Server es un modulo dentro de OTP que nos proporciona una forma estructurada de crear un proceso que encapsule estado y logica de procesamiento de mensajes, ademas de garantizar que cada mensaje solo se procesa una vez.
+
+Los usos mas típicos con sistemas de colas, servidores, gestión de conexiones ...
+
+```elixir
+defmodule MyServer do
+  use GenServer
+
+  def start_link(_args) do
+    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+  end
+
+  def init(:ok) do
+    {:ok, %{}}
+  end
+
+  def handle_cast({:add, value}, state) do
+    new_state = Map.update!(state, :value, 0, &(&1 + value))
+    {:noreply, new_state}
+  end
+
+  def handle_call(:get, _from, state) do
+    {:reply, Map.get(state, :value, 0), state}
+  end
+end
+```
+
+Tambien disponemos de un sistema de supervision de procesos dentro de OTP. Esto nos da muchisima potencia, podemos arrancar miles de hilos que gestionen procesos en paralelo. Y definir estrategias de acción para reaccionar a los ciclos de vida de los procesos.
+
+* Si un proceso muere, reiniciar todos los procesos
+* Si un proceso muere, volver a levantarlo
+* ...
+
+Let It Crash.
+
+```elixir
+defmodule MyApp.Supervisor do
+  use Supervisor
+
+  def start_link do
+    Supervisor.start_link(__MODULE__, :ok)
+  end
+
+  def init(:ok) do
+    children = [
+      worker(MyApp.Worker, [])
+    ]
+
+    supervise(children, strategy: :one_for_one)
+  end
+end
+```
+
+## Chat GPT
 
 ## Y con esto finalizamos esta guía básica de Elixir...
 
