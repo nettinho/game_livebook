@@ -27,7 +27,6 @@ y [Elixir Learning](https://elixir-lang.org/learning.html).
 
 ### Iniciamos
 
-
 * ¿Qué es un lenguaje funcional?
 * Inmutabilidad
 * Elixir vs Python
@@ -65,7 +64,6 @@ IO.inspect(my_map, label: "my_map")
 my_map = Map.put(my_map, :b, "valor_b")
 IO.inspect(my_map, label: "my_map reasignado a nuevo mapa")
 ```
-
 
 ## Elixir vs Python
 
@@ -137,8 +135,6 @@ desarrollo
 | Aplicaciones Web     | Django, flask, fastApi | Phoenix   |
 | Tratamiento de Datos | Pandas                 | Explorer  |
 | Machine Learning     | Keras, Tensorflow      | Bumblebee |
-
-
 
 ## Pipes
 
@@ -407,9 +403,50 @@ end
 
 ## Chat GPT
 
+Chat GPT también sabe elixir. 
+Para animaros a probar este lenguaje y le perdais el miedo, le podeis preguntar a Chat GPT, os dejamos varios promts con los que le pedimos que nos cree una aplicación sencilla.
+
+<!-- livebook:{"break_markdown":true} -->
+
+```
+quiero hacer una aplicacion test en elixir y que me expliques paso a paso 
+como crearlo, tiene que utilizar liveview
+```
+
+<!-- livebook:{"break_markdown":true} -->
+
+```
+Hazme una aplicacion de Elixir con LiveView que me dé el tiempo de hoy.
+Quiero el código completo y en detalle
+```
+
+Podemos pedirle que nos solucione errores
+
+```
+se queja el router de que no conoce esta url http://localhost:4000/weather_info
+```
+
+Describiendo el error
+
+```
+dice que "function WeatherInfoLive.Index.__live__/0 is undefined 
+(module WeatherInfoLive.Index is not available)"
+```
+
+O pasandole directamente la traza de error que nos devuelve elixir
+
+```
+elixir me da el error Expected {:ok, socket} | {:ok, socket, opts}, 
+got: {:error, #Phoenix.LiveView.Socket<id: "phx-F5UC2VcHz6suBQCI", 
+endpoint: WeatherAppWeb.Endpoint, view: WeatherAppWeb.WeatherInfoLive.Index, 
+parent_pid: nil, root_pid: nil, router: WeatherAppWeb.Router, 
+assigns: %{__changed__: %{}, flash: %{}, live_action: nil}, 
+transport_pid: nil, ...>}
+```
+
 ## Y con esto finalizamos esta guía básica de Elixir...
 
-Y esperamos que no sea el fin, te einvitamos a seguir conociendo este maravilloso
+Y esperamos que no sea el fin, te invitamos a seguir conociendo este maravilloso
 lenguaje de programación.
 
 Si te interesa, te invitamos a las charlas que se dan en Meetup Madrid-Elxir
