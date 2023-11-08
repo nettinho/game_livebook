@@ -37,96 +37,96 @@ defmodule Livebook.Notebook.Learn do
   images_dir = Path.expand("learn/images", __DIR__)
 
   welcome_config = %{
-    path: Path.join(__DIR__, "learn/elixir_adventure/conceptos_basicos.livemd"),
+    path: Path.join(__DIR__, "learn/elixir_adventure/novatalk.livemd"),
     details: %{
       description: "Aprende los conceptos básicos de Elixir",
       cover_url: "/images/elixir.png"
     }
   }
 
-  other_configs = [
-    %{
-      path: Path.join(__DIR__, "learn/elixir_adventure/game_tutorial.livemd"),
-      details: %{
-        description: "Familiarízate con los conceptos básicos del mini juego",
-        cover_url: "/images/elixir-portal.jpeg"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/elixir_adventure/elixir_adventure.livemd"),
-      details: %{
-        description: "Última parte del Workshop",
-        cover_url: "/images/logo.png"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/intro_to_livebook.livemd"),
-      details: %{
-        description: "Get to know Livebook, see how it works, and learn its features.",
-        cover_url: "/images/logo.png"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/distributed_portals_with_elixir.livemd"),
-      image_paths: [
-        Path.join(images_dir, "portal-drop.jpeg"),
-        Path.join(images_dir, "portal-list.jpeg")
-      ],
-      details: %{
-        description:
-          "A fast-paced introduction to Elixir by building distributed data-transfer portals.",
-        cover_url: "/images/elixir-portal.jpeg"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/elixir_and_livebook.livemd"),
-      details: %{
-        description: "Learn how to use some of their unique features together.",
-        cover_url: "/images/elixir.png"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/intro_to_kino.livemd"),
-      details: %{
-        description: "Make your notebooks interactive with inputs, controls, and more.",
-        cover_url: "/images/kino.png"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/intro_to_vega_lite.livemd"),
-      details: %{
-        description: "Learn how to quickly create numerous plots for your data.",
-        cover_url: "/images/vega_lite.png"
-      }
-    },
-    %{
-      path: Path.join(__DIR__, "learn/intro_to_maplibre.livemd"),
-      details: %{
-        description: "Seamlessly plot maps using geospatial and tabular data.",
-        cover_url: "/images/maplibre.png"
-      }
-    },
-    %{
-      ref: :kino_vm_introspection,
-      path: Path.join(__DIR__, "learn/kino/vm_introspection.livemd")
-    },
-    %{
-      ref: :kino_chat_app,
-      path: Path.join(__DIR__, "learn/kino/chat_app.livemd")
-    },
-    %{
-      ref: :kino_pong,
-      path: Path.join(__DIR__, "learn/kino/pong.livemd")
-    },
-    %{
-      ref: :kino_custom_kinos,
-      path: Path.join(__DIR__, "learn/kino/custom_kinos.livemd")
-    },
-    %{
-      ref: :kino_smart_cells,
-      path: Path.join(__DIR__, "learn/kino/smart_cells.livemd")
-    }
-  ]
+  other_configs = []
+  #   %{
+  #     path: Path.join(__DIR__, "learn/elixir_adventure/game_tutorial.livemd"),
+  #     details: %{
+  #       description: "Familiarízate con los conceptos básicos del mini juego",
+  #       cover_url: "/images/elixir-portal.jpeg"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/elixir_adventure/elixir_adventure.livemd"),
+  #     details: %{
+  #       description: "Última parte del Workshop",
+  #       cover_url: "/images/logo.png"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/intro_to_livebook.livemd"),
+  #     details: %{
+  #       description: "Get to know Livebook, see how it works, and learn its features.",
+  #       cover_url: "/images/logo.png"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/distributed_portals_with_elixir.livemd"),
+  #     image_paths: [
+  #       Path.join(images_dir, "portal-drop.jpeg"),
+  #       Path.join(images_dir, "portal-list.jpeg")
+  #     ],
+  #     details: %{
+  #       description:
+  #         "A fast-paced introduction to Elixir by building distributed data-transfer portals.",
+  #       cover_url: "/images/elixir-portal.jpeg"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/elixir_and_livebook.livemd"),
+  #     details: %{
+  #       description: "Learn how to use some of their unique features together.",
+  #       cover_url: "/images/elixir.png"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/intro_to_kino.livemd"),
+  #     details: %{
+  #       description: "Make your notebooks interactive with inputs, controls, and more.",
+  #       cover_url: "/images/kino.png"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/intro_to_vega_lite.livemd"),
+  #     details: %{
+  #       description: "Learn how to quickly create numerous plots for your data.",
+  #       cover_url: "/images/vega_lite.png"
+  #     }
+  #   },
+  #   %{
+  #     path: Path.join(__DIR__, "learn/intro_to_maplibre.livemd"),
+  #     details: %{
+  #       description: "Seamlessly plot maps using geospatial and tabular data.",
+  #       cover_url: "/images/maplibre.png"
+  #     }
+  #   },
+  #   %{
+  #     ref: :kino_vm_introspection,
+  #     path: Path.join(__DIR__, "learn/kino/vm_introspection.livemd")
+  #   },
+  #   %{
+  #     ref: :kino_chat_app,
+  #     path: Path.join(__DIR__, "learn/kino/chat_app.livemd")
+  #   },
+  #   %{
+  #     ref: :kino_pong,
+  #     path: Path.join(__DIR__, "learn/kino/pong.livemd")
+  #   },
+  #   %{
+  #     ref: :kino_custom_kinos,
+  #     path: Path.join(__DIR__, "learn/kino/custom_kinos.livemd")
+  #   },
+  #   %{
+  #     ref: :kino_smart_cells,
+  #     path: Path.join(__DIR__, "learn/kino/smart_cells.livemd")
+  #   }
+  # ]
 
   user_configs = Application.compile_env(:livebook, :learn_notebooks, [])
 

@@ -381,19 +381,20 @@ Tambien disponemos de un sistema de supervision de procesos dentro de OTP. Esto 
 Let It Crash.
 
 ```elixir
-defmodule MyApp.Supervisor do
+defmodule A.Server do
   use Supervisor
 
-  def start_link do
-    Supervisor.start_link(__MODULE__, :ok)
-  end
+  alias B
 
-  def init(:ok) do
+  def start_link, do: Supervisor.start_link(__MODULE__, nil, name: __MODULE__)
+
+  @impl Supervisor
+  def init(_) do
     children = [
-      worker(MyApp.Worker, [])
+      {B, [:arg1, :arg2]}
     ]
 
-    supervise(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one)
   end
 end
 ```
