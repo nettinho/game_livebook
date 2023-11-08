@@ -278,7 +278,7 @@ defmodule MyModule do
   end
 
   def check_my_date(_) do
-    "Oh no, the date is invalid. Reason: #{inspect(reason)}"
+    "Not a date"
   end
 end
 ```
@@ -287,6 +287,12 @@ end
 input = "2020-02-30"
 
 MyModule.check_my_date(Date.from_iso8601(input))
+```
+
+```elixir
+input = ["Not a date"]
+
+MyModule.check_my_date(input)
 ```
 
 Si cambiamos el `input` a una fecha correcta del código de arriba podemos observar un comportamiento parecido al del `case`
