@@ -3,15 +3,15 @@
 ```elixir
 defmodule Example do
   def other_function(param, another), do: param <> " " <> another
-  def other_function(param), do: param
+  def other_function(param), do: param <> " " <> "other_function"
   def new_function(param, another), do: param <> " " <> another
-  def new_function(param), do: param
+  def new_function(param), do: param <> " " <> "new_function"
   def baz(param, another), do: param <> " " <> another
-  def baz(param), do: param
-  def bar(param, another), do: param <> " " <> another
-  def bar(param), do: param
+  def baz(param), do: param <> " " <> "baz"
+  def concat(param, another), do: param <> " " <> another
+  def bar(param), do: param <> " " <> "bar"
   def foo(param, another), do: param <> " " <> another
-  def foo(param), do: param
+  def foo(param), do: param <> " " <> "foo"
 end
 ```
 
@@ -184,7 +184,7 @@ Esto evita tener que hacer una anidación de funciones o generar objetos en memo
 Example.other_function("Elixir")
 |> Example.new_function()
 |> Example.baz()
-|> Example.bar("Adventure")
+|> Example.concat("Adventure")
 |> Example.foo()
 ```
 
@@ -221,13 +221,6 @@ Si intentamos hacer un matching con una lista vacía contra un `[head | tail]` n
 
 ```elixir
 [head | tail] = []
-```
-
-Finalmente, podemos utilizar la expresión `[head | tail]` para añadir elementos al principio de la lista.
-
-```elixir
-list = [1, 2, 3]
-[0 | list]
 ```
 
 También podemos realizar el pattern macthing con tuplas. Esto se suele utilizar para hacer match con el tipo de resultado en la llamada de una función.  Por ejemplo, la función  `Date.from_iso8601(string)` retorna `{:ok, date}` si el string representa una fecha válida en un formato  `YYYY-MM-DD`, por el contrario retorna un `{:error, reason}`:
@@ -278,12 +271,14 @@ Utilizando el ejemplo de las fechas visto anteriormente, podemos acceder a difer
 defmodule MyModule do
   def check_my_date({:ok, date}) do
     "We got a valid date: #{inspect(date)}"
-    :valid_date
   end
 
   def check_my_date({:error, reason}) do
     "Oh no, the date is invalid. Reason: #{inspect(reason)}"
-    :invalid_date
+  end
+
+  def check_my_date(_) do
+    "Oh no, the date is invalid. Reason: #{inspect(reason)}"
   end
 end
 ```
@@ -295,10 +290,6 @@ MyModule.check_my_date(Date.from_iso8601(input))
 ```
 
 Si cambiamos el `input` a una fecha correcta del código de arriba podemos observar un comportamiento parecido al del `case`
-
-## Ecto Phoenix Django
-
-## DataFrames
 
 ## Procesos y concurrencia
 
@@ -365,7 +356,7 @@ defmodule MyServer do
   end
 
   def handle_cast({:add, value}, state) do
-    new_state = Map.update!(state, :value, 0, &(&1 + value))
+    new_state = Map.update!(state, :value, &(&1 + value))
     {:noreply, new_state}
   end
 
